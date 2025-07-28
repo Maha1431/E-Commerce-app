@@ -7,8 +7,8 @@ const NewsletterBox = () => {
     }
 
   return (
-    <div className=' text-center'>
-      <p className='text-2xl font-medium text-gray-800'>Subscribe now & get 20% off</p>
+    <div className=' text-center mt-5 bg-fuchsia-200 rounded py-4'>
+      <p className='text-2xl font-medium text-gray-800 mt-5'>Subscribe now & get 20% off</p>
       <p className='text-gray-400 mt-3'>
       Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
       </p>

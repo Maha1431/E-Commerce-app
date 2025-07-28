@@ -1,27 +1,50 @@
-import React from 'react'
-import { assets } from '../assets/assets'
+import React, { useEffect, useState } from 'react';
+import { assets } from '../assets/assets';
 
 const Hero = () => {
-  return (
-    <div className='flex flex-col sm:flex-row border border-gray-400'>
-      {/* Hero Left Side */}
-      <div className='w-full sm:w-1/2 flex items-center justify-center py-10 sm:py-0'>
-            <div className='text-[#414141]'>
-                <div className='flex items-center gap-2'>
-                    <p className='w-8 md:w-11 h-[2px] bg-[#414141]'></p>
-                    <p className=' font-medium text-sm md:text-base'>OUR BESTSELLERS</p>
-                </div>
-                <h1 className='prata-regular text-3xl sm:py-3 lg:text-5xl leading-relaxed'>Latest Arrivals</h1>
-                <div className='flex items-center gap-2'>
-                    <p className='font-semibold text-sm md:text-base'>SHOP NOW</p>
-                    <p className='w-8 md:w-11 h-[1px] bg-[#414141]'></p>
-                </div>
-            </div>
-      </div>
-      {/* Hero Right Side */}
-      <img className='w-full sm:w-1/2' src={assets.hero_img} alt="" />
-    </div>
-  )
-}
+  const images = [
+    assets.hero_img,
+    assets.hero_img1,
+    assets.hero_img2,
+    assets.hero_img3,
+    assets.hero_img4,
+  ];
 
-export default Hero
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent(prev => (prev + 1) % images.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="w-full relative rounded-xl overflow-hidden">
+      {/* Offer Section */}
+      <div className="relative w-full bg-gradient-to-r from-pink-500 to-yellow-500 text-white py-2 px-4 rounded-t-xl overflow-hidden h-[40px] sm:h-[50px] flex items-center mb-2 sm:mb-4">
+        <div className="absolute whitespace-nowrap animate-marquee">
+          <span className="text-xs sm:text-sm md:text-base font-medium">
+            🔥 20% OFF on All Fashion Items! Limited time offer. Shop now and save big! 🔥
+          </span>
+        </div>
+      </div>
+
+      {/* Hero Image Carousel */}
+      <div className="relative w-full h-[200px] sm:h-[300px] md:h-[400px]">
+        {images.map((img, index) => (
+          <img
+            key={index}
+            src={img}
+            alt={`carousel-${index}`}
+            className={`absolute w-full h-full object-cover transition-opacity duration-700 ease-in-out ${
+              index === current ? 'opacity-100' : 'opacity-0'
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Hero;

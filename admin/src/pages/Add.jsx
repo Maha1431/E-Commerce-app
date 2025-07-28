@@ -4,6 +4,7 @@ import axios from 'axios'
 import { backendUrl } from '../App'
 import { toast } from 'react-toastify'
 
+
 const Add = ({token}) => {
 
   const [image1,setImage1] = useState(false)
@@ -112,6 +113,7 @@ const Add = ({token}) => {
                   <option value="Topwear">Topwear</option>
                   <option value="Bottomwear">Bottomwear</option>
                   <option value="Winterwear">Winterwear</option>
+                  <option value="Saree">Saree</option>
               </select>
             </div>
 
