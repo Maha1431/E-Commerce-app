@@ -16,10 +16,23 @@ connectCloudinary()
 
 // middlewares
 app.use(express.json())
+const allowedOrigins = [
+  'http://localhost:5713',
+  'https://e-commerce-frontend1-one.vercel.app'
+];
+
 app.use(cors({
-  origin: 'https://e-commerce-frontend1-one.vercel.app',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 }));
+
 
 // api endpoints
 app.use('/api/user',userRouter)

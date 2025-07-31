@@ -9,7 +9,6 @@ const Hero = () => {
     assets.image6,
     assets.hero_img2,
     assets.hero_img3,
-    assets.hero_img4,
     assets.image1,
   ];
 
