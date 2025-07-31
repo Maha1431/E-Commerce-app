@@ -53,6 +53,14 @@ import p_img49 from './p_img49.png'
 import p_img50 from './p_img50.png'
 import p_img51 from './p_img51.png'
 import p_img52 from './p_img52.png'
+import p_img53 from "./p_img53.webp"
+import p_img54 from "./p_img54.webp"
+import p_img55 from "./p_img55.webp"
+import p_img56 from "./p_img56.webp"
+import p_img57 from "./p_img57.webp"
+import p_img58 from "./p_img58.webp"
+import p_img59 from "./p_img59.webp"
+import p_img60 from "./p_img60.webp"
 
 
 import logo from './logo.png'
@@ -74,18 +82,25 @@ import razorpay_logo from './razorpay_logo.png'
 import stripe_logo from './stripe_logo.png'
 import cross_icon from './cross_icon.png'
 import hero_img1 from "./hero_img1.jpg";
-import hero_img2 from "./hero_img2.png";
+import hero_img2 from "./hero_img2.jpg";
 import hero_img3 from "./hero_img3.png";
-import hero_img4 from "./hero_img4.png"
+import hero_img4 from "./hero_img4.png";
+import image1 from "./image1.jpg"
+import image10 from "./image10.webp";
+import image2 from "./image2.jfif"
+import image6 from "./image6.webp"
 
 export const assets = {
 
     logo,
-    hero_img,
     hero_img1,
     hero_img2,
     hero_img3,
     hero_img4,
+    image1,
+    image2,
+    image10,
+    image6,
     cart_icon,
     dropdown_icon,
     exchange_icon,
@@ -110,6 +125,7 @@ export const products = [
         name: "Women Round Neck Cotton Top",
         description: "A lightweight, usually knitted, pullover shirt, close-fitting and with a round neckline and short sleeves, worn as an undershirt or outer garment.",
         price: 100,
+        oldPrice :167,
         image: [p_img1],
         category: "Women",
         subCategory: "Topwear",
@@ -123,6 +139,7 @@ export const products = [
         description: "A lightweight, usually knitted, pullover shirt, close-fitting and with a round neckline and short sleeves, worn as an undershirt or outer garment.",
         price: 200,
         image: [p_img2_1,p_img2_2,p_img2_3,p_img2_4],
+        oldPrice :297,
         category: "Men",
         subCategory: "Topwear",
         sizes: ["M", "L", "XL"],
@@ -147,6 +164,7 @@ export const products = [
         description: "A lightweight, usually knitted, pullover shirt, close-fitting and with a round neckline and short sleeves, worn as an undershirt or outer garment.",
         price: 110,
         image: [p_img4],
+        oldPrice :178,
         category: "Men",
         subCategory: "Topwear",
         sizes: ["S", "M", "XXL"],
@@ -182,6 +200,7 @@ export const products = [
         name: "Men Tapered Fit Flat-Front Trousers",
         description: "A lightweight, usually knitted, pullover shirt, close-fitting and with a round neckline and short sleeves, worn as an undershirt or outer garment.",
         price: 190,
+        oldPrice :237,
         image: [p_img7],
         category: "Men",
         subCategory: "Bottomwear",
@@ -194,6 +213,7 @@ export const products = [
         name: "Men Round Neck Pure Cotton T-shirt",
         description: "A lightweight, usually knitted, pullover shirt, close-fitting and with a round neckline and short sleeves, worn as an undershirt or outer garment.",
         price: 140,
+         oldPrice :207,
         image: [p_img8],
         category: "Men",
         subCategory: "Topwear",
@@ -218,6 +238,7 @@ export const products = [
         name: "Men Tapered Fit Flat-Front Trousers",
         description: "A lightweight, usually knitted, pullover shirt, close-fitting and with a round neckline and short sleeves, worn as an undershirt or outer garment.",
         price: 110,
+        oldPrice: 179,
         image: [p_img10],
         category: "Men",
         subCategory: "Bottomwear",
@@ -266,6 +287,7 @@ export const products = [
         name: "Boy Round Neck Pure Cotton T-shirt",
         description: "A lightweight, usually knitted, pullover shirt, close-fitting and with a round neckline and short sleeves, worn as an undershirt or outer garment.",
         price: 160,
+        oldPrice :247,
         image: [p_img14],
         category: "Kids",
         subCategory: "Topwear",
@@ -727,6 +749,102 @@ export const products = [
         sizes: ["S", "M", "L", "XL"],
         date: 1716668445448,
         bestseller: false
-    }
+    },
+    {
+    _id: "men_ethnic_001",
+    name: "Men Kurta Set with Dupatta",
+    description: "Traditional kurta set with dupatta made from fine cotton blend fabric.",
+    price: 200,
+    image: [p_img53],
+    category: "Men",
+    subCategory: "Ethnicwear",
+    sizes: ["M", "L", "XL"],
+    date: Date.now(),
+    bestseller: true
+  },
+  {
+    _id: "men_ethnic_002",
+    name: "Men Pathani Suit",
+    description: "Classic pathani suit with straight-cut pants and full sleeves.",
+    price: 199,
+    image: [p_img54],
+    category: "Men",
+    subCategory: "Ethnicwear",
+    sizes: ["M", "L", "XL", "XXL"],
+    date: Date.now(),
+    bestseller: false
+  },
+  {
+    _id: "men_ethnic_003",
+    name: "Men Short Kurta",
+    description: "Stylish short kurta with mandarin collar, perfect for festive occasions.",
+    price: 249,
+    image: [p_img55],
+    category: "Men",
+    subCategory: "Ethnicwear",
+    sizes: ["S", "M", "L"],
+    date: Date.now(),
+    bestseller: false
+  },
+  {
+    _id: "men_ethnic_004",
+    name: "Men Nehru Jacket Set",
+    description: "Elegant Nehru jacket paired with kurta and pajama.",
+    price: 189,
+    image: [p_img56],
+    category: "Men",
+    subCategory: "Ethnicwear",
+    sizes: ["M", "L", "XL"],
+    date: Date.now(),
+    bestseller: true
+  },
+  {
+    _id: "men_ethnic_005",
+    name: "Men Silk Kurta",
+    description: "Rich silk kurta with subtle embroidery for wedding functions.",
+    price: 278,
+    image: [p_img57],
+    category: "Men",
+    subCategory: "Ethnicwear",
+    sizes: ["M", "L", "XL"],
+    date: Date.now(),
+    bestseller: true
+  },
+  {
+    _id: "men_ethnic_006",
+    name: "Men Printed Kurta",
+    description: "Cotton printed kurta with modern ethnic motifs.",
+    price: 234,
+    image: [p_img58],
+    category: "Men",
+    subCategory: "Ethnicwear",
+    sizes: ["S", "M", "L", "XL"],
+    date: Date.now(),
+    bestseller: false
+  },
+  {
+    _id: "men_ethnic_007",
+    name: "Men Embroidered Kurta",
+    description: "Chikan-embroidered kurta for elegant evening wear.",
+    price: 256,
+    image: [p_img59],
+    category: "Men",
+    subCategory: "Ethnicwear",
+    sizes: ["M", "L", "XL"],
+    date: Date.now(),
+    bestseller: true
+  },
+  {
+    _id: "men_ethnic_008",
+    name: "Men Linen Kurta",
+    description: "Lightweight linen kurta perfect for summer festivities.",
+    price: 321,
+    image: [p_img60],
+    category: "Men",
+    subCategory: "Ethnicwear",
+    sizes: ["M", "L"],
+    date: Date.now(),
+    bestseller: false
+  }
 
 ]

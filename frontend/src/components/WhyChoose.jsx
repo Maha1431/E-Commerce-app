@@ -3,7 +3,7 @@ import Title from './Title'
 
 const WhyChoose = () => {
   return (
-    <div className='mt-9 bg-slate-100'>
+    <div className='mt-9 bg-green-300'>
         <div className=' text-xl py-4'>
           <Title text1={'WHY'} text2={'CHOOSE US'} />
       </div>

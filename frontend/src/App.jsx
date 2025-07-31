@@ -17,7 +17,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
   return (
-    <div className='px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]'>
+    <div className='min-h-screen overflow-x-hidden px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 2xl:px-12'>
        <ToastContainer />
       <Navbar/>
       <Searchbar/>

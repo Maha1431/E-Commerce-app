@@ -5,6 +5,8 @@ import BestSeller from '../components/BestSeller'
 import OurPolicy from '../components/OurPolicy'
 import NewsletterBox from '../components/NewsletterBox'
 import WhyChoose from '../components/WhyChoose'
+import SpecialOffers from '../components/SpecialOffers'
+import EthnicWear from '../components/EthinicWear'
 
 const Home = () => {
   return (
@@ -12,6 +14,8 @@ const Home = () => {
       <Hero />
       <LatestCollection/>
       <BestSeller/>
+      <SpecialOffers/>
+      <EthnicWear/>
       <OurPolicy/>
       <NewsletterBox/>
       <WhyChoose/>

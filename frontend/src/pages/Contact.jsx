@@ -51,10 +51,10 @@ const Contact = () => {
       </div>
 
       {/* Google Map */}
-      <div className="px-4 mb-20">
+       <div className="px-4 mb-20">
         <iframe
           title="Our Store Location"
-          src="https://www.google.com/maps/embed?pb=..."
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2794.4222152026077!2d-122.33439562371527!3d47.60383247119644!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x5490102d5177b0c7%3A0x39c2b12d14cf3044!2sWashington%2C%20USA!5e0!3m2!1sen!2sin!4v1659487223047!5m2!1sen!2sin"
           width="100%"
           height="400"
           style={{ border: 0 }}
@@ -64,7 +64,6 @@ const Contact = () => {
           className="rounded-lg shadow-md"
         ></iframe>
       </div>
-
       {/* FAQ Section */}
       <div id="faq" className="px-4 mb-20">
         <FAQ />

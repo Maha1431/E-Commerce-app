@@ -1,29 +1,30 @@
-import React, { useContext } from 'react';
-import { ShopContext } from '../context/ShopContext';
-import { Link } from 'react-router-dom';
+// ProductItem.jsx
+import React from "react";
+import { Link } from "react-router-dom";
 
-const ProductItem = ({ id, image, name, price }) => {
-  const { currency } = useContext(ShopContext);
 
+const ProductItem = ({ id, image, name, price, oldPrice, discount }) => {
   return (
-    <Link
-      onClick={() => scrollTo(0, 0)}
-      className="text-gray-700 cursor-pointer"
-      to={`/product/${id}`}
-    >
-      <div className="overflow-hidden">
-        <img
-          className="hover:scale-125 transition-transform duration-300 ease-in-out"
-          src={image[0]}
-          alt=""
-        />
+    <div className="bg-white shadow-md p-3 rounded hover:scale-105 transition cursor-pointer">
+       <Link to={`/product/${id}`}>
+      <img src={image} alt={name} className="w-full h-2/3 object-cover rounded" />
+      <h3 className="mt-2 text-sm sm:text-base font-medium truncate whitespace-nowrap overflow-hidden">{name}</h3>
+
+      <div className="flex items-center gap-2 mt-1">
+        <p className="text-lg font-bold text-red-600">${price}</p>
+
+        {oldPrice && (
+          <p className="text-sm line-through text-gray-500">${oldPrice}</p>
+        )}
+
+        {discount && (
+          <span className="ml-auto text-xs bg-red-500 text-white px-2 py-0.5 rounded">
+            -{discount}%
+          </span>
+        )}
       </div>
-      <p className="pt-3 pb-1 text-sm">{name}</p>
-      <p className="text-sm font-medium">
-        {currency}
-        {price}
-      </p>
-    </Link>
+      </Link>
+    </div>
   );
 };
 
