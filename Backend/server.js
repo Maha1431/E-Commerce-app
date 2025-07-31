@@ -19,7 +19,6 @@ app.use(express.json())
 const allowedOrigins = [
   'http://localhost:5174',
   'http://localhost:5713',
-  'http://localhost:5714',
   'https://e-commerce-frontend1-one.vercel.app',
   'https://e-commerce-admin-five-black.vercel.app'
 ];
@@ -29,14 +28,14 @@ app.use(cors({
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      console.log('Blocked by CORS:', origin);
+      console.log('❌ Blocked by CORS:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
 }));
 
-app.options('*', cors()); // <- ensure preflight requests handled
+app.options('*', cors()); // Handle preflight requests
 
 
 // api endpoints
