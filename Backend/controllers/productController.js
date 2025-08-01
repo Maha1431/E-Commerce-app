@@ -101,9 +101,9 @@ const updateProduct = async (req, res) => {
       subCategory,
       sizes,
       bestseller,
+      existingImages,
     } = req.body;
 
-    // Build the update object
     const updateData = {
       name,
       description,
@@ -116,24 +116,32 @@ const updateProduct = async (req, res) => {
       sizes: sizes ? JSON.parse(sizes) : undefined,
     };
 
-    // Handle optional new images
     const image1 = req.files?.image1?.[0];
     const image2 = req.files?.image2?.[0];
     const image3 = req.files?.image3?.[0];
     const image4 = req.files?.image4?.[0];
 
-    const images = [image1, image2, image3, image4].filter(Boolean);
+    const newImages = [image1, image2, image3, image4];
 
-    if (images.length > 0) {
-      const imagesUrl = await Promise.all(
-        images.map((item) =>
-          cloudinary.uploader.upload(item.path, { resource_type: "image" })
-        )
-      );
-      updateData.image = imagesUrl.map((img) => img.secure_url);
+    // Parse the existing image URLs from frontend
+    const prevImages = existingImages ? JSON.parse(existingImages) : [];
+
+    const finalImages = [];
+
+    for (let i = 0; i < 4; i++) {
+      if (newImages[i]) {
+        const uploaded = await cloudinary.uploader.upload(newImages[i].path, {
+          resource_type: "image",
+        });
+        finalImages[i] = uploaded.secure_url;
+      } else {
+        finalImages[i] = prevImages[i] || null;
+      }
     }
 
-    // Remove undefined fields
+    updateData.image = finalImages;
+
+    // Clean up
     Object.keys(updateData).forEach(
       (key) => updateData[key] === undefined && delete updateData[key]
     );
@@ -148,6 +156,7 @@ const updateProduct = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+
 
 
 export { listProducts, addProduct, removeProduct, singleProduct,updateProduct }

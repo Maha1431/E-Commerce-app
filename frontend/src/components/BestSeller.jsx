@@ -31,7 +31,7 @@ const BestSeller = () => {
             <ProductItem
               id={item._id}
               name={item.name}
-              image={item.image}
+              image={item.image[0]}
               price={item.price}
               sizes={item.sizes}
               showSizesOnHover={true}

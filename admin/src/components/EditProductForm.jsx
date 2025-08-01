@@ -27,27 +27,31 @@ const EditProductForm = ({ editItem, setEditItem, token, onSuccess }) => {
     form.append('discountPrice', discountPrice);
     form.append('quantity', quantity);
     form.append('sizes', JSON.stringify(sizes));
+    // ✅ Send old images to backend
+  form.append('existingImages', JSON.stringify(editItem.image));
+
     if (image1) form.append('image1', image1);
     if (image2) form.append('image2', image2);
     if (image3) form.append('image3', image3);
     if (image4) form.append('image4', image4);
 
-    try {
-      const res = await axios.put(`${backendUrl}/api/product/update`, form, {
-        headers: { 'Content-Type': 'multipart/form-data', token },
-      });
+  
+  try {
+    const res = await axios.put(`${backendUrl}/api/product/update`, form, {
+      headers: { 'Content-Type': 'multipart/form-data', token },
+    });
 
-      if (res.data.success) {
-        toast.success('Product updated successfully');
-        setEditItem(null);
-        onSuccess();
-      } else {
-        toast.error(res.data.message);
-      }
-    } catch (error) {
-      toast.error('Update failed');
+    if (res.data.success) {
+      toast.success('Product updated successfully');
+      setEditItem(null);
+      onSuccess();
+    } else {
+      toast.error(res.data.message);
     }
-  };
+  } catch (error) {
+    toast.error('Update failed');
+  }
+};
 
   const toggleSize = (size) => {
     setSizes((prev) =>
