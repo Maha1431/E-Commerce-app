@@ -1,10 +1,11 @@
+// ...imports...
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom"; // ✅ useParams must be imported here
 import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 import RelatedProducts from "../components/RelatedProducts";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+
 
 const Product = () => {
   const { productId } = useParams();
@@ -18,7 +19,8 @@ const Product = () => {
   const [isHovering, setIsHovering] = useState(false);
   const [bgPos, setBgPos] = useState("center");
 
-  const ALL_SIZES = ["S", "M", "L", "XL", "XXL"];
+  const KIDS_SIZES = ["0-3M", "0-6M", "0-9M", "0-12M", "1-2Y", "2-3Y", "3-4Y", "4-5Y", "5-6Y"];
+  const ADULT_SIZES = ["S", "M", "L", "XL", "XXL"];
 
   useEffect(() => {
     const found = products.find((item) => item._id === productId);
@@ -28,13 +30,12 @@ const Product = () => {
     }
   }, [productId, products]);
 
-    useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, [productId]);
 
   const handleMouseMove = (e) => {
-    const { left, top, width, height } =
-      imageRef.current.getBoundingClientRect();
+    const { left, top, width, height } = imageRef.current.getBoundingClientRect();
     const x = ((e.clientX - left) / width) * 100;
     const y = ((e.clientY - top) / height) * 100;
     setBgPos(`${x}% ${y}%`);
@@ -44,6 +45,41 @@ const Product = () => {
   const handleMouseLeave = () => setIsHovering(false);
 
   const isOutOfStock = productData?.sizes.length === 0;
+
+  const renderSizeButtons = (sizesArray, label) => {
+    const available = sizesArray.filter((s) => productData.sizes.includes(s));
+    if (available.length === 0) return null;
+
+    return (
+      <div className="my-4">
+        <p className="font-semibold text-sm mb-1">{label}</p>
+        <div className="flex gap-2 flex-wrap">
+          {sizesArray.map((s, index) => {
+            const isAvailable = productData.sizes.includes(s);
+            const isSelected = s === size;
+
+            return (
+              <button
+                key={index}
+                disabled={!isAvailable}
+                onClick={() => isAvailable && setSize(s)}
+                className={`py-2 px-4 rounded border text-sm transition
+                  ${isSelected ? "border-orange-500" : "border-gray-300"}
+                  ${
+                    !isAvailable
+                      ? "text-gray-400 line-through cursor-not-allowed bg-gray-100"
+                      : "bg-white hover:border-black"
+                  }
+                `}
+              >
+                {s}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
 
   return productData ? (
     <div className="border-t-2 pt-10 transition-opacity ease-in duration-500 opacity-100">
@@ -89,10 +125,9 @@ const Product = () => {
         <div className="flex-1">
           <h1 className="font-medium text-2xl mt-2">{productData.name}</h1>
           <div className="flex items-center gap-1 mt-2">
-            <img src={assets.star_icon} alt="" className="w-3.5" />
-            <img src={assets.star_icon} alt="" className="w-3.5" />
-            <img src={assets.star_icon} alt="" className="w-3.5" />
-            <img src={assets.star_icon} alt="" className="w-3.5" />
+            {[...Array(4)].map((_, i) => (
+              <img key={i} src={assets.star_icon} alt="" className="w-3.5" />
+            ))}
             <img src={assets.star_dull_icon} alt="" className="w-3.5" />
             <p className="pl-2">(122)</p>
           </div>
@@ -100,38 +135,13 @@ const Product = () => {
             {currency}
             {productData.price}
           </p>
-          <p className="mt-5 text-gray-500 md:w-4/5">
-            {productData.description}
-          </p>
+          <p className="mt-5 text-gray-500 md:w-4/5">{productData.description}</p>
 
-          {/* Size & Availability Section */}
+          {/* Size Select Section */}
           {!isOutOfStock ? (
-            <div className="flex flex-col gap-4 my-8">
-              <p>Select Size</p>
-              <div className="flex gap-2 flex-wrap">
-                {ALL_SIZES.map((s, index) => {
-                  const isAvailable = productData.sizes.includes(s);
-                  const isSelected = s === size;
-
-                  return (
-                    <button
-                      key={index}
-                      disabled={!isAvailable}
-                      onClick={() => isAvailable && setSize(s)}
-                      className={`py-2 px-4 rounded border transition
-                        ${isSelected ? "border-orange-500" : "border-gray-300"}
-                        ${
-                          !isAvailable
-                            ? "text-gray-400 line-through cursor-not-allowed bg-gray-100"
-                            : "bg-white hover:border-black"
-                        }
-                      `}
-                    >
-                      {s}
-                    </button>
-                  );
-                })}
-              </div>
+            <div className="my-6">
+              {renderSizeButtons(ADULT_SIZES, "Adult Sizes")}
+              {renderSizeButtons(KIDS_SIZES, "Kids Sizes")}
             </div>
           ) : (
             <div className="text-red-500 font-semibold mt-6">
@@ -139,17 +149,15 @@ const Product = () => {
             </div>
           )}
 
+          {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 mt-4">
-            {/* Add to Cart Button */}
             <button
               onClick={() => addToCart(productData._id, size)}
               disabled={isOutOfStock}
-              className="flex bg-black text-white px-8 py-3 text-sm active:bg-gray-800 disabled:opacity-50"
+              className="bg-black text-white px-8 py-3 text-sm active:bg-gray-800 disabled:opacity-50"
             >
               ADD TO CART
             </button>
-
-            {/* Buy Now Button */}
             <button
               onClick={() => {
                 if (!size) return toast.error("Please select a size first!");
@@ -157,7 +165,7 @@ const Product = () => {
                 navigate("/place-order");
               }}
               disabled={isOutOfStock}
-              className="flex bg-orange-600 text-white px-8 py-3 text-sm active:bg-orange-700 disabled:opacity-50"
+              className="bg-orange-600 text-white px-8 py-3 text-sm active:bg-orange-700 disabled:opacity-50"
             >
               BUY NOW
             </button>
@@ -181,16 +189,7 @@ const Product = () => {
         <div className="flex flex-col gap-4 border px-6 py-6 text-sm text-gray-500">
           <p>
             An e-commerce website is an online platform that facilitates the
-            buying and selling of products or services over the internet. It
-            serves as a virtual marketplace where businesses and individuals can
-            showcase their products, interact with customers, and conduct
-            transactions without the need for a physical presence.
-          </p>
-          <p>
-            E-commerce websites typically display products or services along
-            with detailed descriptions, images, prices, and any available
-            variations (e.g., sizes, colors). Each product usually has its own
-            dedicated page with relevant information.
+            buying and selling of products or services over the internet...
           </p>
         </div>
       </div>
