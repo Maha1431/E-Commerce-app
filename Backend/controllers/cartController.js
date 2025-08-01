@@ -71,5 +71,42 @@ const getUserCart = async (req,res) => {
     }
 
 }
+const mergeCart = async (req, res) => {
+  try {
+    const userId = req.body.userId; // set by auth middleware
+    const guestCart = req.body.cart;
 
-export { addToCart, updateCart, getUserCart }
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
+    const userCart = user.cartData || {};
+
+    // Merge logic
+    for (const itemId in guestCart) {
+      if (!userCart[itemId]) {
+        userCart[itemId] = {};
+      }
+
+      for (const size in guestCart[itemId]) {
+        if (userCart[itemId][size]) {
+          userCart[itemId][size] += guestCart[itemId][size];
+        } else {
+          userCart[itemId][size] = guestCart[itemId][size];
+        }
+      }
+    }
+
+    await userModel.findByIdAndUpdate(userId, { cartData: userCart });
+
+    res.json({ success: true, message: "Cart merged successfully" });
+
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+
+export { addToCart, updateCart, getUserCart, mergeCart }

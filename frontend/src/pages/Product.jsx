@@ -1,21 +1,24 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { ShopContext } from '../context/ShopContext';
-import { assets } from '../assets/assets';
-import RelatedProducts from '../components/RelatedProducts';
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
+import { ShopContext } from "../context/ShopContext";
+import { assets } from "../assets/assets";
+import RelatedProducts from "../components/RelatedProducts";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Product = () => {
   const { productId } = useParams();
   const { products, currency, addToCart } = useContext(ShopContext);
   const [productData, setProductData] = useState(null);
-  const [image, setImage] = useState('');
-  const [size, setSize] = useState('');
+  const [image, setImage] = useState("");
+  const [size, setSize] = useState("");
+  const navigate = useNavigate();
 
   const imageRef = useRef(null);
   const [isHovering, setIsHovering] = useState(false);
-  const [bgPos, setBgPos] = useState('center');
+  const [bgPos, setBgPos] = useState("center");
 
-  const ALL_SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
+  const ALL_SIZES = ["S", "M", "L", "XL", "XXL"];
 
   useEffect(() => {
     const found = products.find((item) => item._id === productId);
@@ -25,8 +28,13 @@ const Product = () => {
     }
   }, [productId, products]);
 
+    useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [productId]);
+
   const handleMouseMove = (e) => {
-    const { left, top, width, height } = imageRef.current.getBoundingClientRect();
+    const { left, top, width, height } =
+      imageRef.current.getBoundingClientRect();
     const x = ((e.clientX - left) / width) * 100;
     const y = ((e.clientY - top) / height) * 100;
     setBgPos(`${x}% ${y}%`);
@@ -65,8 +73,8 @@ const Product = () => {
               className="w-full h-full bg-no-repeat bg-center bg-cover transition-all duration-300 ease-in-out"
               style={{
                 backgroundImage: `url(${image})`,
-                backgroundSize: isHovering ? '200%' : '100%',
-                backgroundPosition: isHovering ? bgPos : 'center',
+                backgroundSize: isHovering ? "200%" : "100%",
+                backgroundPosition: isHovering ? bgPos : "center",
               }}
             />
             {isOutOfStock && (
@@ -92,7 +100,9 @@ const Product = () => {
             {currency}
             {productData.price}
           </p>
-          <p className="mt-5 text-gray-500 md:w-4/5">{productData.description}</p>
+          <p className="mt-5 text-gray-500 md:w-4/5">
+            {productData.description}
+          </p>
 
           {/* Size & Availability Section */}
           {!isOutOfStock ? (
@@ -109,10 +119,12 @@ const Product = () => {
                       disabled={!isAvailable}
                       onClick={() => isAvailable && setSize(s)}
                       className={`py-2 px-4 rounded border transition
-                        ${isSelected ? 'border-orange-500' : 'border-gray-300'}
-                        ${!isAvailable
-                          ? 'text-gray-400 line-through cursor-not-allowed bg-gray-100'
-                          : 'bg-white hover:border-black'}
+                        ${isSelected ? "border-orange-500" : "border-gray-300"}
+                        ${
+                          !isAvailable
+                            ? "text-gray-400 line-through cursor-not-allowed bg-gray-100"
+                            : "bg-white hover:border-black"
+                        }
                       `}
                     >
                       {s}
@@ -122,17 +134,34 @@ const Product = () => {
               </div>
             </div>
           ) : (
-            <div className="text-red-500 font-semibold mt-6">This product is currently sold out.</div>
+            <div className="text-red-500 font-semibold mt-6">
+              This product is currently sold out.
+            </div>
           )}
 
-          {/* Add to Cart */}
-          <button
-            onClick={() => addToCart(productData._id, size)}
-            disabled={isOutOfStock}
-            className={`mt-4 bg-black text-white px-8 py-3 text-sm active:bg-gray-700 disabled:opacity-50`}
-          >
-            ADD TO CART
-          </button>
+          <div className="flex flex-col sm:flex-row gap-4 mt-4">
+            {/* Add to Cart Button */}
+            <button
+              onClick={() => addToCart(productData._id, size)}
+              disabled={isOutOfStock}
+              className="flex bg-black text-white px-8 py-3 text-sm active:bg-gray-800 disabled:opacity-50"
+            >
+              ADD TO CART
+            </button>
+
+            {/* Buy Now Button */}
+            <button
+              onClick={() => {
+                if (!size) return toast.error("Please select a size first!");
+                addToCart(productData._id, size);
+                navigate("/place-order");
+              }}
+              disabled={isOutOfStock}
+              className="flex bg-orange-600 text-white px-8 py-3 text-sm active:bg-orange-700 disabled:opacity-50"
+            >
+              BUY NOW
+            </button>
+          </div>
 
           <hr className="mt-8 sm:w-4/5" />
           <div className="text-sm text-gray-500 mt-5 flex flex-col gap-1">
@@ -151,21 +180,26 @@ const Product = () => {
         </div>
         <div className="flex flex-col gap-4 border px-6 py-6 text-sm text-gray-500">
           <p>
-            An e-commerce website is an online platform that facilitates the buying and selling of
-            products or services over the internet. It serves as a virtual marketplace where
-            businesses and individuals can showcase their products, interact with customers, and
-            conduct transactions without the need for a physical presence.
+            An e-commerce website is an online platform that facilitates the
+            buying and selling of products or services over the internet. It
+            serves as a virtual marketplace where businesses and individuals can
+            showcase their products, interact with customers, and conduct
+            transactions without the need for a physical presence.
           </p>
           <p>
-            E-commerce websites typically display products or services along with detailed
-            descriptions, images, prices, and any available variations (e.g., sizes, colors). Each
-            product usually has its own dedicated page with relevant information.
+            E-commerce websites typically display products or services along
+            with detailed descriptions, images, prices, and any available
+            variations (e.g., sizes, colors). Each product usually has its own
+            dedicated page with relevant information.
           </p>
         </div>
       </div>
 
       {/* Related Products */}
-      <RelatedProducts category={productData.category} subCategory={productData.subCategory} />
+      <RelatedProducts
+        category={productData.category}
+        subCategory={productData.subCategory}
+      />
     </div>
   ) : (
     <div className="opacity-0"></div>

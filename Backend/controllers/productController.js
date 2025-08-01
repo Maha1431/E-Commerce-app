@@ -5,7 +5,7 @@ import productModel from "../models/productModel.js"
 const addProduct = async (req, res) => {
     try {
 
-        const { name, description, price, category, subCategory, sizes, bestseller } = req.body
+        const { name, description, price,discountPrice, quantity, category, subCategory, sizes, bestseller } = req.body
 
         const image1 = req.files.image1 && req.files.image1[0]
         const image2 = req.files.image2 && req.files.image2[0]
@@ -26,6 +26,8 @@ const addProduct = async (req, res) => {
             description,
             category,
             price: Number(price),
+            discountPrice: Number(discountPrice), // fixed
+            quantity: Number(quantity),           // fixed
             subCategory,
             bestseller: bestseller === "true" ? true : false,
             sizes: JSON.parse(sizes),
@@ -86,5 +88,66 @@ const singleProduct = async (req, res) => {
         res.json({ success: false, message: error.message })
     }
 }
+const updateProduct = async (req, res) => {
+  try {
+    const {
+      id,
+      name,
+      description,
+      price,
+      discountPrice,
+      quantity,
+      category,
+      subCategory,
+      sizes,
+      bestseller,
+    } = req.body;
 
-export { listProducts, addProduct, removeProduct, singleProduct }
+    // Build the update object
+    const updateData = {
+      name,
+      description,
+      price: Number(price),
+      discountPrice: Number(discountPrice),
+      quantity: Number(quantity),
+      category,
+      subCategory,
+      bestseller: bestseller === "true",
+      sizes: sizes ? JSON.parse(sizes) : undefined,
+    };
+
+    // Handle optional new images
+    const image1 = req.files?.image1?.[0];
+    const image2 = req.files?.image2?.[0];
+    const image3 = req.files?.image3?.[0];
+    const image4 = req.files?.image4?.[0];
+
+    const images = [image1, image2, image3, image4].filter(Boolean);
+
+    if (images.length > 0) {
+      const imagesUrl = await Promise.all(
+        images.map((item) =>
+          cloudinary.uploader.upload(item.path, { resource_type: "image" })
+        )
+      );
+      updateData.image = imagesUrl.map((img) => img.secure_url);
+    }
+
+    // Remove undefined fields
+    Object.keys(updateData).forEach(
+      (key) => updateData[key] === undefined && delete updateData[key]
+    );
+
+    const updatedProduct = await productModel.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
+
+    res.json({ success: true, message: "Product Updated", product: updatedProduct });
+  } catch (error) {
+    console.error(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+
+export { listProducts, addProduct, removeProduct, singleProduct,updateProduct }

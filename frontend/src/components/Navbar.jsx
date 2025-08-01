@@ -33,13 +33,13 @@ const Navbar = () => {
       )}
 
       <div
-        className={`bg-blue-900 text-white py-5 font-medium ${
+        className={`bg-slate-300 text-black py-5 font-medium ${
           visible ? "hidden sm:block" : ""
         }`}
       >
         <div className="max-w-screen-xl mx-auto px-4 sm:px-8 flex items-center justify-between rounded">
           <Link to="/">
-            <img src={assets.logo} className="w-36 bg-purple-50" alt="Logo" />
+            <img src={assets.logo} className="w-36 " alt="Logo" />
           </Link>
 
           {/* Desktop Nav */}
@@ -135,7 +135,7 @@ const Navbar = () => {
           </ul>
 
           {/* Right Section */}
-          <div className="flex items-center gap-6 bg-white p-3 rounded">
+          <div className="flex items-center gap-6  p-3 rounded">
             {/* Search */}
             <img
               onClick={() => {
