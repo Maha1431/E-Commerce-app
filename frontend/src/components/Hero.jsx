@@ -3,13 +3,17 @@ import { assets } from "../assets/assets";
 
 const Hero = () => {
   const images = [
-    assets.image10,
-    assets.image2,
-    assets.hero_img1,
-    assets.image6,
-    assets.hero_img2,
-    assets.hero_img3,
-    assets.image1,
+    // assets.image10,
+    // assets.image2,
+    // assets.hero_img1,
+    // assets.image6,
+    // assets.hero_img2,
+    // assets.hero_img3,
+    // assets.image1,
+    assets.banner_img,
+    assets.banner_img1,
+    assets.banner_img2,
+    assets.banner_img3,
   ];
 
   const [current, setCurrent] = useState(0);

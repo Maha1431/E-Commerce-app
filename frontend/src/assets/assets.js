@@ -83,24 +83,22 @@ import stripe_logo from './stripe_logo.png'
 import cross_icon from './cross_icon.png'
 import hero_img1 from "./hero_img1.jpg";
 import hero_img2 from "./hero_img2.jpg";
-import hero_img3 from "./hero_img3.png";
 import hero_img4 from "./hero_img4.png";
-import image1 from "./image1.jpg"
-import image10 from "./image10.webp";
-import image2 from "./image2.jfif"
-import image6 from "./image6.webp"
+import banner_img from "./banner_img.jpg"
+import banner_img1 from "./banner_img1.png"
+import banner_img2 from "./banner_img2.jpg"
+import banner_img3 from "./banner_img3.png"
 
 export const assets = {
 
     logo,
     hero_img1,
     hero_img2,
-    hero_img3,
     hero_img4,
-    image1,
-    image2,
-    image10,
-    image6,
+    banner_img,
+    banner_img1,
+    banner_img2,
+    banner_img3,
     cart_icon,
     dropdown_icon,
     exchange_icon,
