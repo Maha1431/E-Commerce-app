@@ -14,9 +14,7 @@ const ProductItem = ({
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div
-      className="bg-white shadow-md p-3 rounded hover:shadow-lg transition-transform duration-300 transform hover:scale-105 cursor-pointer"
-    >
+    <div className="bg-white shadow-md p-3 rounded hover:shadow-lg transition-transform duration-300 transform hover:scale-105 cursor-pointer">
       <Link to={`/product/${id}`}>
         {/* Image Hover Area */}
         <div
@@ -37,15 +35,17 @@ const ProductItem = ({
 
         {/* Price Section */}
         <div className="flex items-center gap-2 mt-1">
-          <p className="text-lg font-bold text-red-600">${price}</p>
-          {oldPrice && (
-            <p className="text-sm line-through text-gray-500">${oldPrice}</p>
-          )}
-          {discount && (
-            <span className="ml-auto text-xs bg-red-500 text-white px-2 py-0.5 rounded">
-              -{discount}%
-            </span>
-          )}
+          <div className="flex items-center gap-2 mt-1">
+            <p className="text-lg font-bold text-red-600">${price}</p>
+            {oldPrice && (
+              <p className="text-sm line-through text-gray-500">${oldPrice}</p>
+            )}
+            {discount && (
+              <span className="ml-auto text-xs bg-green-600 text-white px-2 py-0.5 rounded">
+                {discount}% OFF
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Sizes - Only show on hover, below price */}

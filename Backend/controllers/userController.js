@@ -2,6 +2,8 @@ import validator from "validator";
 import bcrypt from "bcrypt"
 import jwt from 'jsonwebtoken'
 import userModel from "../models/userModel.js";
+import crypto from 'crypto';
+import nodemailer from 'nodemailer';
 
 
 const createToken = (id) => {
@@ -98,6 +100,84 @@ const adminLogin = async (req, res) => {
         res.json({ success: false, message: error.message })
     }
 }
+ const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await userModel.findOne({ email });
+
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    // Generate token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const tokenExpiry = Date.now() + 1000 * 60 * 15; // 15 minutes
+
+    user.resetToken = resetToken;
+    user.resetTokenExpiry = tokenExpiry;
+    await user.save();
+
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+     console.log(process.env.FRONTEND_URL);
+    // Configure nodemailer
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+       user: process.env.EMAIL_USER,  // ✅ app sender
+    pass: process.env.EMAIL_PASS,  // ✅ app password
+      },
+    });
+    console.log(process.env.EMAIL_USER);
+    console.log(process.env.EMAIL_PASS);
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER, // ✅ app sends the email
+      to: email,
+      subject: 'Reset Your Password',
+      html: `<p>Click <a href="${resetLink}">here</a> to reset your password. Valid for 15 minutes.</p>`,
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.json({ success: true, message: 'Reset email sent successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Something went wrong' });
+
+  }
+};
+  
+const resetPassword = async (req, res) => {
+ try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    console.log("Received token:", token);
+
+    const user = await userModel.findOne({
+      resetToken: token,
+      resetTokenExpiry: { $gt: Date.now() }
+     
+    });
+ console.log('DB token:', user?.resetToken);
+console.log('DB expiry:', user?.resetTokenExpiry);
+    if (!user) {
+      console.log("No user found or token expired");
+      return res.status(400).json({ success: false, message: 'Invalid or expired token' });
+    }
+
+    console.log("User found:", user.email);
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
+
+    user.resetToken = undefined;
+    user.resetTokenExpiry = undefined;
+
+    await user.save();
+    res.json({ success: true, message: 'Password reset successful' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Failed to reset password' });
+  }
+};
 
 
-export { loginUser, registerUser, adminLogin }
+export { loginUser, registerUser, adminLogin, forgotPassword, resetPassword }

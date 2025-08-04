@@ -6,7 +6,6 @@ import { assets } from "../assets/assets";
 import RelatedProducts from "../components/RelatedProducts";
 import { toast } from "react-toastify";
 
-
 const Product = () => {
   const { productId } = useParams();
   const { products, currency, addToCart } = useContext(ShopContext);
@@ -19,7 +18,18 @@ const Product = () => {
   const [isHovering, setIsHovering] = useState(false);
   const [bgPos, setBgPos] = useState("center");
 
-  const KIDS_SIZES = ["0-3M", "0-6M", "0-9M", "0-12M", "1-2Y", "2-3Y", "3-4Y", "4-5Y", "5-6Y"];
+  const KIDS_SIZES = [
+    "0-3M",
+    "0-6M",
+    "0-9M",
+    "0-12M",
+    "1-2Y",
+    "2-3Y",
+    "3-4Y",
+    "4-5Y",
+    "5-6Y",
+    "S",
+  ];
   const ADULT_SIZES = ["S", "M", "L", "XL", "XXL"];
 
   useEffect(() => {
@@ -35,7 +45,8 @@ const Product = () => {
   }, [productId]);
 
   const handleMouseMove = (e) => {
-    const { left, top, width, height } = imageRef.current.getBoundingClientRect();
+    const { left, top, width, height } =
+      imageRef.current.getBoundingClientRect();
     const x = ((e.clientX - left) / width) * 100;
     const y = ((e.clientY - top) / height) * 100;
     setBgPos(`${x}% ${y}%`);
@@ -80,7 +91,7 @@ const Product = () => {
       </div>
     );
   };
-console.log("Product Data:", productData);
+  console.log("Product Data:", productData);
 
   return productData ? (
     <div className="border-t-2 pt-10 transition-opacity ease-in duration-500 opacity-100">
@@ -132,33 +143,68 @@ console.log("Product Data:", productData);
             <img src={assets.star_dull_icon} alt="" className="w-3.5" />
             <p className="pl-2">(122)</p>
           </div>
-          <p className="mt-5 text-3xl font-medium">
-            {currency}
-            {productData.price}
+          <div className="mt-5 flex items-center gap-4">
+            {/* Show discounted pricing if discountPrice is valid and less than price */}
+            {productData.discountPrice &&
+            productData.discountPrice < productData.price ? (
+              <>
+                <p className="text-3xl font-semibold text-red-600">
+                  {currency}
+                  {productData.discountPrice}
+                </p>
+                <p className="text-lg text-gray-500 line-through">
+                  {currency}
+                  {productData.price}
+                </p>
+                <p className="text-sm text-green-600 font-medium">
+                  (
+                  {Math.round(
+                    100 - (productData.discountPrice / productData.price) * 100
+                  )}
+                  % OFF)
+                </p>
+              </>
+            ) : (
+              <p className="text-3xl font-semibold text-red-600">
+                {currency}
+                {productData.price}
+              </p>
+            )}
+          </div>
+
+          <p className="mt-5 text-gray-500 md:w-4/5">
+            {productData.description}
           </p>
-          <p className="mt-5 text-gray-500 md:w-4/5">{productData.description}</p>
 
           {/* Size Select Section */}
-          {!isOutOfStock ? (
-            <div className="my-6">
-              {renderSizeButtons(ADULT_SIZES, "Adult Sizes")}
-              {renderSizeButtons(KIDS_SIZES, "Kids Sizes")}
-            </div>
-          ) : (
-            <div className="text-red-500 font-semibold mt-6">
-              This product is currently sold out.
-            </div>
-          )}
+      {/* Size Select Section */}
+{!isOutOfStock ? (
+  <div className="my-6">
+    {productData.category?.toLowerCase() === "kids"
+      ? renderSizeButtons(KIDS_SIZES, "Available Kids Sizes")
+      : renderSizeButtons(ADULT_SIZES, "Available Adult Sizes")}
+  </div>
+) : (
+  <div className="text-red-500 font-semibold mt-6">
+    This product is currently sold out.
+  </div>
+)}
+
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 mt-4">
-            <button
-              onClick={() => addToCart(productData._id, size)}
-              disabled={isOutOfStock}
-              className="bg-black text-white px-8 py-3 text-sm active:bg-gray-800 disabled:opacity-50"
-            >
-              ADD TO CART
-            </button>
+         <button
+  onClick={() => {
+    if (!size) return toast.error("Please select a size first!");
+    addToCart(productData._id, size);
+    toast.success("Product added to cart successfully!");
+  }}
+  disabled={isOutOfStock}
+  className="bg-black text-white px-8 py-3 text-sm active:bg-gray-800 disabled:opacity-50"
+>
+  ADD TO CART
+</button>
+
             <button
               onClick={() => {
                 if (!size) return toast.error("Please select a size first!");
@@ -208,6 +254,7 @@ console.log("Product Data:", productData);
       <RelatedProducts
         category={productData.category}
         subCategory={productData.subCategory}
+        currentProductId={productData._id}
       />
     </div>
   ) : (
