@@ -55,42 +55,44 @@ const Product = () => {
   const handleMouseEnter = () => setIsHovering(true);
   const handleMouseLeave = () => setIsHovering(false);
 
-  const isOutOfStock = productData?.sizes.length === 0;
+ const isOutOfStock = !productData?.sizes || productData.sizes.every((s) => s.quantity === 0);
+
 
   const renderSizeButtons = (sizesArray, label) => {
-    const available = sizesArray.filter((s) => productData.sizes.includes(s));
-    if (available.length === 0) return null;
+    if (!productData?.sizes || productData.sizes.length === 0) return null;
 
     return (
       <div className="my-4">
         <p className="font-semibold text-sm mb-1">{label}</p>
         <div className="flex gap-2 flex-wrap">
-          {sizesArray.map((s, index) => {
-            const isAvailable = productData.sizes.includes(s);
-            const isSelected = s === size;
+    {sizesArray.map((s, index) => {
+  const sizeObj = productData.sizes.find((item) => item.size === s);
+  const isAvailable = sizeObj && sizeObj.quantity > 0;
+  const isSelected = s === size;
 
-            return (
-              <button
-                key={index}
-                disabled={!isAvailable}
-                onClick={() => isAvailable && setSize(s)}
-                className={`py-2 px-4 rounded border text-sm transition
-                  ${isSelected ? "border-orange-500" : "border-gray-300"}
-                  ${
-                    !isAvailable
-                      ? "text-gray-400 line-through cursor-not-allowed bg-gray-100"
-                      : "bg-white hover:border-black"
-                  }
-                `}
-              >
-                {s}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    );
-  };
+  return (
+    <div key={index} title={!isAvailable ? "Out of stock" : ""}>
+      <button
+        disabled={!isAvailable}
+        onClick={() => isAvailable && setSize(s)}
+        className={`py-2 px-4 rounded border text-sm transition
+          ${isSelected ? "border-orange-500" : "border-gray-300"}
+          ${
+            !isAvailable
+              ? "text-gray-400 line-through cursor-not-allowed bg-gray-100"
+              : "bg-white hover:border-black"
+          }
+        `}
+      >
+        {s}
+      </button>
+    </div>
+  );
+})}
+</div>
+</div>
+    )};
+
   console.log("Product Data:", productData);
 
   return productData ? (
@@ -177,33 +179,32 @@ const Product = () => {
           </p>
 
           {/* Size Select Section */}
-      {/* Size Select Section */}
-{!isOutOfStock ? (
-  <div className="my-6">
-    {productData.category?.toLowerCase() === "kids"
-      ? renderSizeButtons(KIDS_SIZES, "Available Kids Sizes")
-      : renderSizeButtons(ADULT_SIZES, "Available Adult Sizes")}
-  </div>
-) : (
-  <div className="text-red-500 font-semibold mt-6">
-    This product is currently sold out.
-  </div>
-)}
-
+          {/* Size Select Section */}
+          {!isOutOfStock ? (
+            <div className="my-6">
+              {productData.category?.toLowerCase() === "kids"
+                ? renderSizeButtons(KIDS_SIZES, "Available Kids Sizes")
+                : renderSizeButtons(ADULT_SIZES, "Available Adult Sizes")}
+            </div>
+          ) : (
+            <div className="text-red-500 font-semibold mt-6">
+              This product is currently sold out.
+            </div>
+          )}
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 mt-4">
-         <button
-  onClick={() => {
-    if (!size) return toast.error("Please select a size first!");
-    addToCart(productData._id, size);
-    toast.success("Product added to cart successfully!");
-  }}
-  disabled={isOutOfStock}
-  className="bg-black text-white px-8 py-3 text-sm active:bg-gray-800 disabled:opacity-50"
->
-  ADD TO CART
-</button>
+            <button
+              onClick={() => {
+                if (!size) return toast.error("Please select a size first!");
+                addToCart(productData._id, size);
+                toast.success("Product added to cart successfully!");
+              }}
+              disabled={isOutOfStock}
+              className="bg-black text-white px-8 py-3 text-sm active:bg-gray-800 disabled:opacity-50"
+            >
+              ADD TO CART
+            </button>
 
             <button
               onClick={() => {

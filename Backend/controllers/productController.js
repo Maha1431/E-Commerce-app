@@ -5,7 +5,7 @@ import productModel from "../models/productModel.js"
 const addProduct = async (req, res) => {
     try {
 
-        const { name, description, price,discountPrice, quantity, category, subCategory, sizes, bestseller } = req.body
+        const { name, description, price,discountPrice, category, subCategory, sizes, bestseller } = req.body
 
         const image1 = req.files.image1 && req.files.image1[0]
         const image2 = req.files.image2 && req.files.image2[0]
@@ -27,7 +27,6 @@ const addProduct = async (req, res) => {
             category,
             price: Number(price),
             discountPrice: Number(discountPrice), // fixed
-            quantity: Number(quantity),           // fixed
             subCategory,
             bestseller: bestseller === "true" ? true : false,
             sizes: JSON.parse(sizes),
@@ -53,8 +52,15 @@ const listProducts = async (req, res) => {
     try {
         
         const products = await productModel.find({});
-        console.log(products)
-        res.json({success:true,products})
+       // Filter out sizes with quantity 0
+    const filteredProducts = products.map(product => {
+      const filteredSizes = product.sizes.filter(size => size.quantity > 0);
+      return {
+        ...product._doc,
+        sizes: filteredSizes
+      };
+    });
+        res.json({success:true,products: filteredProducts})
 
     } catch (error) {
         console.log(error)
@@ -81,8 +87,17 @@ const singleProduct = async (req, res) => {
         
         const { productId } = req.body
         const product = await productModel.findById(productId)
-        res.json({success:true,product})
+            // Filter out zero-quantity sizes
+    const filteredSizes = product.sizes.filter(size => size.quantity > 0);
 
+    res.json({
+      success: true,
+      product: {
+        ...product._doc,
+        sizes: filteredSizes,
+      },
+    });
+        
     } catch (error) {
         console.log(error)
         res.json({ success: false, message: error.message })
@@ -96,7 +111,6 @@ const updateProduct = async (req, res) => {
       description,
       price,
       discountPrice,
-      quantity,
       category,
       subCategory,
       sizes,
@@ -109,7 +123,6 @@ const updateProduct = async (req, res) => {
       description,
       price: Number(price),
       discountPrice: Number(discountPrice),
-      quantity: Number(quantity),
       category,
       subCategory,
       bestseller: bestseller === "true",

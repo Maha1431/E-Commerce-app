@@ -6,7 +6,7 @@ const ProductItem = ({
   image,
   name,
   price,
-  oldPrice,
+   oldPrice,
   discount,
   sizes = [],
   showSizesOnHover = false,
@@ -37,9 +37,9 @@ const ProductItem = ({
         <div className="flex items-center gap-2 mt-1">
           <div className="flex items-center gap-2 mt-1">
             <p className="text-lg font-bold text-red-600">${price}</p>
-            {oldPrice && (
-              <p className="text-sm line-through text-gray-500">${oldPrice}</p>
-            )}
+           {oldPrice && (
+            <p className="text-sm text-gray-500 line-through">${oldPrice}</p>
+          )}
             {discount && (
               <span className="ml-auto text-xs bg-green-600 text-white px-2 py-0.5 rounded">
                 {discount}% OFF
@@ -49,24 +49,30 @@ const ProductItem = ({
         </div>
 
         {/* Sizes - Only show on hover, below price */}
-        {showSizesOnHover && sizes.length > 0 && (
-          <div
-            className={`mt-2 flex flex-wrap gap-1 items-center text-xs transition-all duration-300 ease-in-out ${
-              isHovered ? "opacity-100 h-auto" : "opacity-0 h-0 overflow-hidden"
-            }`}
-          >
-            <span className="font-semibold text-gray-700">Size:</span>
-            {sizes.map((size, i) => (
-              <span
-                key={i}
-                className="bg-gray-100 border border-gray-300 px-2 py-0.5 rounded-full text-gray-700"
-                title={`Available in size ${size}`} // Optional tooltip
-              >
-                {size}
-              </span>
-            ))}
-          </div>
-        )}
+         {sizes.length > 0 && showSizesOnHover && (
+  <div className="mt-2 flex flex-wrap gap-1 items-center text-xs overflow-hidden">
+    <span className="font-semibold text-gray-700">Size:</span>
+    {sizes
+     .filter((s) => s?.size) // ✅ Filter out invalid entries
+    .map((s, i) => (
+      <span
+        key={i}
+        className={`px-2 py-0.5 border border-gray-300 rounded-full transition-all duration-200 ${
+          s.quantity === 0
+            ? "bg-gray-300 text-gray-500 line-through cursor-not-allowed"
+            : isHovered
+            ? "bg-gray-200 text-black scale-105"
+            : "bg-gray-100 text-gray-700"
+        }`}
+      >
+        {s.quantity === 0 ? `${s.size} - Sold Out` : s.size}
+      </span>
+    ))}
+  </div>
+)}
+
+
+        
       </Link>
     </div>
   );

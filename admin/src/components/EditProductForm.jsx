@@ -10,59 +10,65 @@ const EditProductForm = ({ editItem, setEditItem, token, onSuccess }) => {
   const [price, setPrice] = useState(editItem.price);
   const [discountPrice, setDiscountPrice] = useState(editItem.discountPrice);
   const [sizes, setSizes] = useState(editItem.sizes || []);
-  const [quantity, setQuantity] = useState(editItem.quantity || 0);
 
   const [image1, setImage1] = useState(null);
   const [image2, setImage2] = useState(null);
   const [image3, setImage3] = useState(null);
   const [image4, setImage4] = useState(null);
 
+  const allSizes = ['S', 'M', 'L', 'XL', 'XXL', '0-3M', '3-6M', '6-9M', '9-12M', '1-2Y', '2-3Y', '3-4Y', '4-5Y', '5-6Y'];
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = new FormData();
+
     form.append('id', editItem._id);
     form.append('name', name);
     form.append('description', description);
     form.append('price', price);
     form.append('discountPrice', discountPrice);
-    form.append('quantity', quantity);
     form.append('sizes', JSON.stringify(sizes));
-    // ✅ Send old images to backend
-  form.append('existingImages', JSON.stringify(editItem.image));
+    form.append('existingImages', JSON.stringify(editItem.image));
 
     if (image1) form.append('image1', image1);
     if (image2) form.append('image2', image2);
     if (image3) form.append('image3', image3);
     if (image4) form.append('image4', image4);
 
-  
-  try {
-    const res = await axios.put(`${backendUrl}/api/product/update`, form, {
-      headers: { 'Content-Type': 'multipart/form-data', token },
-    });
+    try {
+      const res = await axios.put(`${backendUrl}/api/product/update`, form, {
+        headers: { 'Content-Type': 'multipart/form-data', token },
+      });
 
-    if (res.data.success) {
-      toast.success('Product updated successfully');
-      setEditItem(null);
-      onSuccess();
-    } else {
-      toast.error(res.data.message);
+      if (res.data.success) {
+        toast.success('Product updated successfully');
+        setEditItem(null);
+        onSuccess();
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (error) {
+      toast.error('Update failed');
     }
-  } catch (error) {
-    toast.error('Update failed');
-  }
-};
-
-  const toggleSize = (size) => {
-    setSizes((prev) =>
-      prev.includes(size)
-        ? prev.filter((item) => item !== size)
-        : [...prev, size]
-    );
   };
 
-  const adultSizes = ['S', 'M', 'L', 'XL', 'XXL'];
-  const kidsSizes = ['0-3M', '3-6M', '6-9M', '9-12M', '1-2Y', '2-3Y', '3-4Y', '4-5Y', '5-6Y'];
+  const handleSizeToggle = (sizeLabel) => {
+    const existing = sizes.find((s) => s.size === sizeLabel);
+    if (existing) {
+      // remove
+      setSizes((prev) => prev.filter((s) => s.size !== sizeLabel));
+    } else {
+      // add with default qty
+      setSizes((prev) => [...prev, { size: sizeLabel, quantity: 0 }]);
+    }
+  };
+
+  const handleQuantityChange = (sizeLabel, value) => {
+    const newSizes = sizes.map((s) =>
+      s.size === sizeLabel ? { ...s, quantity: parseInt(value) || 0 } : s
+    );
+    setSizes(newSizes);
+  };
 
   return (
     <div className="fixed inset-0 z-40 bg-black bg-opacity-50 flex justify-center items-center overflow-auto">
@@ -80,70 +86,54 @@ const EditProductForm = ({ editItem, setEditItem, token, onSuccess }) => {
           {/* Inputs */}
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium mb-1">Product Name</label>
-              <input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} className="input" required />
+              <label className="block text-sm font-medium mb-1">Product Name</label>
+              <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="input" required />
             </div>
 
             <div>
-              <label htmlFor="price" className="block text-sm font-medium mb-1">Price</label>
-              <input id="price" type="number" value={price} onChange={(e) => setPrice(e.target.value)} className="input" required />
+              <label className="block text-sm font-medium mb-1">Price</label>
+              <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} className="input" required />
             </div>
 
             <div>
-              <label htmlFor="discountPrice" className="block text-sm font-medium mb-1">Discount Price</label>
-              <input id="discountPrice" type="number" value={discountPrice} onChange={(e) => setDiscountPrice(e.target.value)} className="input" />
-            </div>
-
-            <div>
-              <label htmlFor="quantity" className="block text-sm font-medium mb-1">Quantity</label>
-              <input id="quantity" type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} className="input" />
+              <label className="block text-sm font-medium mb-1">Discount Price</label>
+              <input type="number" value={discountPrice} onChange={(e) => setDiscountPrice(e.target.value)} className="input" />
             </div>
           </div>
 
           <div>
-            <label htmlFor="description" className="block text-sm font-medium mb-1">Description</label>
-            <textarea
-              id="description"
-              rows="3"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full border border-gray-300 rounded p-2 resize-none"
-              required
-            />
+            <label className="block text-sm font-medium mb-1">Description</label>
+            <textarea rows="3" value={description} onChange={(e) => setDescription(e.target.value)} className="w-full border border-gray-300 rounded p-2 resize-none" required />
           </div>
 
-          {/* Sizes */}
+          {/* Sizes + Quantity */}
           <div>
-            <p className="font-semibold mb-1">Select Sizes</p>
-
-            <p className="text-sm font-medium mt-2">Adult Sizes</p>
-            <div className="flex gap-3 flex-wrap mb-2">
-              {adultSizes.map((size) => (
-                <div key={size} onClick={() => toggleSize(size)}>
-                  <p
-                    className={`px-3 py-1 rounded cursor-pointer border ${
-                      sizes.includes(size) ? 'bg-pink-200 border-pink-400' : 'bg-slate-200'
-                    }`}
-                  >
-                    {size}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            <p className="text-sm font-medium mt-2">Kids Sizes</p>
-            <div className="flex gap-3 flex-wrap">
-              {kidsSizes.map((size) => (
-                <div key={size} onClick={() => toggleSize(size)}>
-                  <p
-                    className={`px-3 py-1 rounded cursor-pointer border ${
-                      sizes.includes(size) ? 'bg-pink-200 border-pink-400' : 'bg-slate-200'
-                    }`}
-                  >
-                    {size}
-                  </p>
-                </div>
-              ))}
+            <p className="font-semibold mb-2">Sizes & Quantities</p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {allSizes.map((sizeLabel) => {
+                const selected = sizes.find((s) => s.size === sizeLabel);
+                return (
+                  <div key={sizeLabel} className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={!!selected}
+                      onChange={() => handleSizeToggle(sizeLabel)}
+                    />
+                    <label>{sizeLabel}</label>
+                    {selected && (
+                      <input
+                        type="number"
+                        min={0}
+                        value={selected.quantity}
+                        onChange={(e) =>
+                          handleQuantityChange(sizeLabel, e.target.value)
+                        }
+                        className="w-16 px-2 py-1 border rounded"
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 

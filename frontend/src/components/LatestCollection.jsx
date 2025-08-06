@@ -32,6 +32,7 @@ const LatestCollection = () => {
                 image={item.image[0]}
                 name={item.name}
                 price={item.price}
+                oldPrice={item.discountPrice}
                 sizes={item.sizes}
                 showSizesOnHover={true}
               />

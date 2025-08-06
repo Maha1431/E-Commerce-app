@@ -5,11 +5,15 @@ const productSchema = new mongoose.Schema({
   description: { type: String, required: true },
   price: { type: Number, required: true },
   discountPrice: { type: Number, default: 0 }, // 💡 NEW
-  quantity: { type: Number, default: 0 }, // 💡 NEW
   image: { type: Array, required: true },
   category: { type: String, required: true },
   subCategory: { type: String, required: true },
-  sizes: { type: Array, required: true },
+ sizes: [
+    {
+      size: { type: String, required: true },  // e.g., "S", "M", "L", "XL"
+      quantity: { type: Number, required: true }, // e.g., 10
+    }
+  ],
   bestseller: { type: Boolean },
   date: { type: Number, required: true },
 });

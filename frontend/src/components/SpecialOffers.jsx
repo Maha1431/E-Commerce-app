@@ -37,15 +37,17 @@ const SpecialOffers = () => {
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
           {offerProducts.map((item, index) => (
-            <ProductItem
-              key={index}
-              id={item._id}
-              image={item.image[0]}
-              name={item.name}
-              price={item.price}
-              oldPrice={item.oldPrice}
-              discount={item.discount}
-            />
+           <ProductItem
+  key={index}
+  id={item._id}
+  image={item.image[0]}
+  name={item.name}
+  price={item.price}
+  oldPrice={item.oldPrice}
+  discount={item.discount}
+  showSizesOnHover={true}
+/>
+
           ))}
         </div>
       )}

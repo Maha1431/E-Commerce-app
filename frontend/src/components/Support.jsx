@@ -10,7 +10,7 @@ const Support = () => {
   };
 
   return (
-    <div className='py-12 px-4 bg-gray-50 min-h-screen'>
+    <div className='py-12 px-4 bg-gray-100 min-h-screen'>
       {/* Page Title */}
       <div className='text-center text-2xl pt-10 border-t'>
         <Title text1={'CUSTOMER'} text2={'SUPPORT'} />

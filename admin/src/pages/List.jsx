@@ -47,7 +47,7 @@ const List = ({ token }) => {
     <div className="px-4">
       <p className="mb-4 text-xl font-semibold">All Products List</p>
 
-      {/* Header */}
+      {/* Table Header */}
       <div className="hidden md:grid grid-cols-7 gap-4 items-center py-2 px-4 border bg-gray-100 text-sm font-medium">
         <span>Image</span>
         <span>Name</span>
@@ -64,12 +64,32 @@ const List = ({ token }) => {
           key={index}
           className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-4 items-center py-3 px-4 border text-sm"
         >
-          <img className="w-14 h-14 object-cover" src={item.image[0]} alt={item.name} />
+          <img
+            className="w-14 h-14 object-cover"
+            src={item.image[0]}
+            alt={item.name}
+          />
           <p className="truncate">{item.name}</p>
           <p className="hidden sm:block truncate">{item.category}</p>
           <p className="hidden md:block">{currency}{item.price}</p>
-          <p className="hidden md:block">{item.sizes?.join(', ') || '-'}</p>
-          <p className="hidden md:block">{item.quantity}</p>
+
+          <p className="hidden md:block">
+  {Array.isArray(item.sizes) && item.sizes.length > 0
+    ? item.sizes
+        .filter(s => s?.size && typeof s.quantity === 'number')
+        .map(s => `${s.size}: ${s.quantity}`)
+        .join(', ')
+    : '-'}
+</p>
+
+
+          {/* ✅ Total quantity across all sizes */}
+          <p className="hidden md:block">
+  {Array.isArray(item.sizes)
+    ? item.sizes.reduce((acc, s) => acc + (s?.quantity || 0), 0)
+    : 0}
+</p>
+
 
           <div className="flex gap-3 sm:col-span-1 justify-end md:justify-center">
             <button
