@@ -14,7 +14,7 @@ const BestSeller = () => {
   }, [products]);
 
   return (
-    <div className="my-10  bg-gradient-to-r  from-yellow-200 to-amber-300  ">
+    <div className="my-10  bg-gradient-to-r  from-yellow-200 to-sky-400  ">
       <div className="text-center text-3xl py-8 ">
         <Title text1={"BEST"} text2={"SELLERS"} />
         <p className="w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600">

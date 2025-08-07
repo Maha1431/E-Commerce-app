@@ -17,8 +17,8 @@ const EthnicWear = () => {
   }, [products]);
 
   return (
-    <div className="pt-5 px-4 mb-6 border-t">
-      <div className="text-2xl md:text-3xl font-semibold mb-6 text-center text-white">
+    <div className="pt-5 px-4 mb-6 border-t bg-orange-400">
+      <div className="text-2xl md:text-3xl font-semibold mb-6 text-center">
         <Title text1="ETHNIC" text2="WEARS" />
       </div>
 

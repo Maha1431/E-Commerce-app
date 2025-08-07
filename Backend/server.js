@@ -19,6 +19,7 @@ app.use(express.json())
 const allowedOrigins = [
   'http://localhost:5174',
   'http://localhost:5713',
+  'http://localhost:4173',
   'https://e-commerce-frontend1-one.vercel.app',
   'https://e-commerce-admin-five-black.vercel.app'
 ];
