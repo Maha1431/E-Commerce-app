@@ -66,6 +66,7 @@ const Cart = () => {
         {cartData.map((item, index) => {
           const productData = products.find((product) => product._id === item._id);
           if (!productData) return null; // skip rendering if product not found
+console.log(productData.image); // Check in browser console
 
           return (
             <div
@@ -73,7 +74,7 @@ const Cart = () => {
               className="py-4 border-t border-b text-gray-700 grid grid-cols-[4fr_0.5fr_0.5fr] sm:grid-cols-[4fr_2fr_0.5fr] items-center gap-4"
             >
               <div className="flex items-start gap-6">
-                <img className="w-16 sm:w-20" src={productData.image} alt="" />
+                <img className="w-16 sm:w-20" src={productData.image[0]} alt="" />
                 <div>
                   <p className="text-xs sm:text-lg font-medium">{productData.name}</p>
                   <div className="flex items-center gap-5 mt-2">
