@@ -21,19 +21,21 @@ const App = () => {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallButton, setShowInstallButton] = useState(false);
 
-  useEffect(() => {
-    const handleBeforeInstallPrompt = (e) => {
-      e.preventDefault(); // Prevent the automatic prompt
-      setDeferredPrompt(e);
-      setShowInstallButton(true); // Show your custom install button
-    };
+ useEffect(() => {
+  const handleBeforeInstallPrompt = (e) => {
+    console.log("beforeinstallprompt event fired ✅");
+    e.preventDefault(); 
+    setDeferredPrompt(e);
+    setShowInstallButton(true);
+  };
 
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+  window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-    };
-  }, []);
+  return () => {
+    window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+  };
+}, []);
+
 
   const handleInstallClick = async () => {
     if (deferredPrompt) {
@@ -49,7 +51,7 @@ const App = () => {
     <div className='min-h-screen overflow-x-hidden px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 2xl:px-12'>
        <h1 className='text-center'>My PWA App</h1>
       {deferredPrompt && (
-        <button className='p-5' onClick={handleInstallClick}>Install App</button>
+        <button className='p-2 ' onClick={handleInstallClick}>Install App</button>
       )}
        <ToastContainer />
       <Navbar/>
