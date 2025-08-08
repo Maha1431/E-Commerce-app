@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { assets } from "../assets/assets";
 import { Link, NavLink } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
+import { FaHeart } from "react-icons/fa";
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
@@ -146,6 +147,13 @@ const Navbar = () => {
               className="w-5 cursor-pointer"
               alt="Search"
             />
+            <Link
+  to="/wishlist"
+  className="flex items-center gap-1 text-gray-700 hover:text-red-500"
+>
+  <FaHeart className="text-lg" />
+  <span className="hidden sm:inline">Wishlist</span>
+</Link>
 
             {/* Profile */}
             <div className="group relative">
@@ -158,9 +166,9 @@ const Navbar = () => {
               {token && (
                 <div className="group-hover:block hidden absolute dropdown-menu right-0 pt-4 z-50">
                   <div className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded shadow-md">
-                    <p className="cursor-pointer hover:text-black">
+                    <button onClick={() => navigate("/profile")} className="cursor-pointer hover:text-black">
                       My Profile
-                    </p>``  ``
+                    </button>
                     <p
                       onClick={() => navigate("/orders")}
                       className="cursor-pointer hover:text-black"

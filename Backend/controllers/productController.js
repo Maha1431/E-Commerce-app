@@ -169,7 +169,39 @@ const updateProduct = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+ const rateProduct = async (req, res) => {
+  try {
+    const { productId, userId, rating, comment } = req.body;
+
+    if (!productId || !userId || !rating) {
+      return res.status(400).json({ message: "Missing required fields." });
+    }
+
+    const product = await productModel.findById(productId);
+
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    // Check if user has already rated
+    const existingRating = product.ratings.find(
+      (r) => r.userId.toString() === userId
+    );
+
+    if (existingRating) {
+      // Update existing rating
+      existingRating.rating = rating;
+      existingRating.comment = comment;
+    } else {
+      // Add new rating
+      product.ratings.push({ userId, rating, comment });
+    }
+
+   await product.save({ validateBeforeSave: false }); // ✅ Skip full validation
+
+    res.status(200).json({ message: "Rating submitted", ratings: product.ratings });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 
-
-export { listProducts, addProduct, removeProduct, singleProduct,updateProduct }
+export { listProducts, addProduct, removeProduct, singleProduct,updateProduct,rateProduct }

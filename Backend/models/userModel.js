@@ -6,9 +6,10 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     cartData: { type: Object, default: {} },
-   resetToken: { type: String, default: null },
-resetTokenExpiry: { type: Date, default: null },
-
+    resetToken: { type: String, default: null },
+    resetTokenExpiry: { type: Date, default: null },
+    wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "product", default: [] }], // ✅
+    recentlyViewed: [{ type: mongoose.Schema.Types.ObjectId, ref: "product" }], // ✅
   },
   { minimize: false }
 );

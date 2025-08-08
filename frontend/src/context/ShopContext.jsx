@@ -151,13 +151,69 @@ const ShopContextProvider = (props) => {
         if (token) {
             getUserCart(token)
         }
-    }, [token])
+    }, [token]);
+
+
+const fetchUserOrders = async () => {
+  try {
+    const res = await axios.get(`${backendUrl}/api/user/orders`, {
+      headers: { token },
+    });
+
+    return res.data.success ? res.data.orders : [];
+  } catch (err) {
+    console.error("Error fetching orders:", err);
+    return [];
+  }
+};
+
+
+const fetchWishlist = async () => {
+  try {
+    const response = await axios.get(backendUrl + '/api/user/wishlist', {
+      headers: { token },
+    });
+
+    if (response.data.success) {
+      return response.data.wishlist;
+    } else {
+      toast.error(response.data.message);
+      return [];
+    }
+  } catch (error) {
+    console.log(error);
+    toast.error("Failed to fetch wishlist.");
+    return [];
+  }
+};
+
+
+const fetchRecentlyViewed = async () => {
+  try {
+    const response = await axios.get(backendUrl + '/api/user/recently-viewed', {
+      headers: { token },
+    });
+
+    if (response.data.success) {
+      return response.data.products;
+    } else {
+      toast.error(response.data.message);
+      return [];
+    }
+  } catch (error) {
+    console.log(error);
+    toast.error("Failed to fetch recently viewed products.");
+    return [];
+  }
+};
+
 
     const value = {
         products, currency, delivery_fee,
         search, setSearch, showSearch, setShowSearch,
         cartItems, addToCart,setCartItems, getUserCart,
         getCartCount, updateQuantity,
+        fetchRecentlyViewed, fetchUserOrders, fetchWishlist,
         getCartAmount, navigate, backendUrl,
         setToken, token
     }

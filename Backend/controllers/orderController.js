@@ -16,7 +16,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 // Placing orders using COD Method
 const placeOrder = async (req, res) => {
   try {
-    const { userId, items, amount, address } = req.body;
+     const userId = req.userId; // Assuming middleware sets req.userId
+    const { items, amount, address } = req.body;
     console.log("🟨 Received Order Payload:", req.body);
 
     // Validate required fields
@@ -179,9 +180,7 @@ const allOrders = async (req,res) => {
 // User Order Data For Forntend
 const userOrders = async (req,res) => {
     try {
-        
-        const { userId } = req.body
-
+         const userId = req.userId;
         const orders = await orderModel.find({ userId })
         res.json({success:true,orders})
 

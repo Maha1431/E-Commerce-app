@@ -14,6 +14,13 @@ const productSchema = new mongoose.Schema({
       quantity: { type: Number, required: true }, // e.g., 10
     }
   ],
+  ratings: [
+    {
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
+      rating: { type: Number, required: true },
+      comment: { type: String },
+    }
+  ],
   bestseller: { type: Boolean },
   date: { type: Number, required: true },
 });

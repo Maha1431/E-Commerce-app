@@ -5,9 +5,11 @@ import {
   removeProduct,
   singleProduct,
   updateProduct,
+  rateProduct,
 } from "../controllers/productController.js";
 import upload from "../middleware/multer.js";
 import adminAuth from "../middleware/adminAuth.js";
+import authUser from "../middleware/auth.js";
 
 const productRouter = express.Router();
 
@@ -36,5 +38,6 @@ productRouter.put(
   ]),
   updateProduct
 ); // NEW
+productRouter.post("/rate", authUser, rateProduct);
 
 export default productRouter;
