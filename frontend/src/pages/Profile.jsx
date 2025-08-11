@@ -1,98 +1,247 @@
 import React, { useEffect, useState, useContext } from "react";
-import axios from "axios";
-import RateProduct from "../components/RateProduct";
 import { ShopContext } from "../context/ShopContext";
 import { Link } from "react-router-dom";
+import RateProduct from "../components/RateProduct";
 
 const Profile = () => {
   const [orders, setOrders] = useState([]);
-  const[wishlist, setWishlist] = useState([]);
+  const [wishlist, setWishlist] = useState([]);
   const [recentlyViewed, setRecentlyViewed] = useState([]);
   const [visibleRatingId, setVisibleRatingId] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    address: { street: "", city: "", zip: "" },
+  });
 
- const { token, fetchUserOrders, fetchRecentlyViewed } = useContext(ShopContext);
+  const { token, fetchUserOrders, fetchRecentlyViewed, fetchUserInfo, updateUserInfo } =
+    useContext(ShopContext);
 
-  // Decode token and extract user info
-  useEffect(() => {
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        setUserInfo(payload);
-        console.log("Decoded token payload:", payload);
-      } catch (err) {
-        console.error("Failed to decode token", err);
-      }
-    }
-  }, [token]);
-
- 
-// UPDATE fetchData to use localStorage for wishlist:
 useEffect(() => {
-  const fetchData = async () => {
+  const loadUserAndOrders = async () => {
     try {
-      const [ordersData, recentlyViewedData] = await Promise.all([
-        fetchUserOrders(),
-        fetchRecentlyViewed(),
+      const [userData, ordersData] = await Promise.all([
+        fetchUserInfo(),
+        fetchUserOrders()
       ]);
 
-      const storedWishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+      let finalAddress = { ...userData?.address };
 
-      setOrders(ordersData || []);
-      setRecentlyViewed(recentlyViewedData || []);
-      setWishlist(storedWishlist); // <- from localStorage
+if (ordersData?.length > 0) {
+  const sortedOrders = [...ordersData].sort(
+    (a, b) => new Date(b.date) - new Date(a.date) // latest first
+  );
+  const latestOrder = sortedOrders[0];
+
+  if (latestOrder?.address) {
+    finalAddress = {
+      street: latestOrder.address.street || finalAddress.street || "",
+      city: latestOrder.address.city || finalAddress.city || "",
+      zip: latestOrder.address.zip || latestOrder.address.pincode || finalAddress.zip || ""
+    };
+  }
+}
+
+setUserInfo({
+  ...userData,
+  address: finalAddress
+});
+
+
+      // make sure edit form has same data
+      setFormData({
+        name: userData?.name || "",
+        email: userData?.email || "",
+        address: finalAddress
+      });
+
     } catch (err) {
-      console.error("Error fetching profile data:", err);
+      console.error("Error loading user/profile data:", err);
     }
   };
 
-  if (token) fetchData();
+  if (token) {
+    loadUserAndOrders();
+  }
 }, [token]);
 
-  return (
-    <div className="p-6 max-w-4xl mx-auto">
-      
 
-    {/* Orders */}
+
+  const handleSave = async () => {
+    try {
+      await updateUserInfo(formData);
+      setUserInfo(formData);
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error updating user info", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [ordersData, recentlyViewedData] = await Promise.all([
+          fetchUserOrders(),
+          fetchRecentlyViewed(),
+        ]);
+
+        const storedWishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+
+        setOrders(ordersData || []);
+        setRecentlyViewed(recentlyViewedData || []);
+        setWishlist(storedWishlist);
+      } catch (err) {
+        console.error("Error fetching profile data:", err);
+      }
+    };
+
+    if (token) fetchData();
+  }, [token, fetchUserOrders, fetchRecentlyViewed]);
+
+  return (
+    <div className="p-6 max-w-4xl mx-auto space-y-8">
+      {/* USER INFO */}
+      <div className="bg-white rounded-lg shadow p-4 sm:p-6 flex flex-col sm:flex-row sm:items-start gap-6 w-full">
+        <img
+          src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
+            userInfo?.name || "User"
+          )}&background=random`}
+          alt="Profile"
+          className="w-20 h-20 rounded-full border mx-auto sm:mx-0"
+        />
+
+        <div className="flex-1 w-full">
+          {isEditing ? (
+            <div className="space-y-3 w-full">
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="w-full border rounded p-2"
+                placeholder="Name"
+              />
+              <input
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="w-full border rounded p-2"
+                placeholder="Email"
+              />
+              <input
+                type="text"
+                value={formData.address.street}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    address: { ...formData.address, street: e.target.value },
+                  })
+                }
+                className="w-full border rounded p-2"
+                placeholder="Street"
+              />
+              <input
+                type="text"
+                value={formData.address.city}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    address: { ...formData.address, city: e.target.value },
+                  })
+                }
+                className="w-full border rounded p-2"
+                placeholder="City"
+              />
+              <input
+                type="text"
+                value={formData.address.zip}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    address: { ...formData.address, zip: e.target.value },
+                  })
+                }
+                className="w-full border rounded p-2"
+                placeholder="ZIP Code"
+              />
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={handleSave}
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 w-full sm:w-auto"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={() => setIsEditing(false)}
+                  className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 w-full sm:w-auto"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center sm:text-left">
+              <h2 className="text-xl font-semibold">{userInfo?.name || "User"}</h2>
+              <p className="text-gray-600 break-words">{userInfo?.email}</p>
+              {userInfo?.address && (
+                <p className="text-gray-500 text-sm break-words">
+                  {userInfo.address.street}, {userInfo.address.city}, {userInfo.address.zip}
+                </p>
+              )}
+              <button
+                onClick={() => setIsEditing(true)}
+                className="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 w-full sm:w-auto"
+              >
+                Edit
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ORDERS */}
       <div>
         <h2 className="text-2xl font-semibold mb-4">My Orders</h2>
-        {orders.filter(order => order.status === "Delivered").length === 0 ? (
+        {orders.filter((order) => order.status === "Delivered").length === 0 ? (
           <p className="text-gray-600">No delivered orders yet.</p>
         ) : (
           orders
-            .filter(order => order.status === "Delivered")
+            .filter((order) => order.status === "Delivered")
             .map((order, idx) => (
               <div key={idx} className="border p-4 mb-6 rounded">
-                <p><strong>Order ID:</strong> {order._id}</p>
-                <p><strong>Total:</strong> ₹{order.amount}</p>
-                <p><strong>Status:</strong> {order.status}</p>
+                <p>
+                  <strong>Order ID:</strong> {order._id}
+                </p>
+                <p>
+                  <strong>Total:</strong> ₹{order.amount}
+                </p>
+                <p>
+                  <strong>Status:</strong> {order.status}
+                </p>
 
                 {Array.isArray(order.items) &&
-                  order.items.map((item, i) => {
+                  order.items.map((item) => {
                     if (!item?.productId || !userInfo?._id) return null;
                     const uniqueKey = item.productId?.toString();
 
-;
-
                     return (
                       <div key={uniqueKey} className="mt-3 border-t pt-3">
-                        <p><strong>Product:</strong> {item.name}</p>
+                        <p>
+                          <strong>Product:</strong> {item.name}
+                        </p>
                         <button
-                          onClick={() =>  {console.log("Clicked to rate:", uniqueKey)
-                             setVisibleRatingId(uniqueKey)}}
+                          onClick={() => setVisibleRatingId(uniqueKey)}
                           className="text-blue-600 underline text-sm mt-1"
                         >
                           Rate this product
                         </button>
                         {visibleRatingId === uniqueKey && (
-                             <>
-                             {console.log("Rendering RateProduct for", uniqueKey)}
                           <RateProduct
                             productId={item.productId?.toString()}
                             userId={userInfo._id}
                             onClose={() => setVisibleRatingId(null)}
                           />
-                          </>
                         )}
                       </div>
                     );
@@ -102,42 +251,43 @@ useEffect(() => {
         )}
       </div>
 
-
-      {/* Wishlist */}
-<div className="mb-8">
-  <h2 className="text-2xl font-semibold mb-4">My Wishlist</h2>
-  {wishlist.length === 0 ? (
-    <p className="text-gray-600">Your wishlist is empty.</p>
-  ) : (
-    <div className="grid gap-5 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
-      {wishlist.map((item) => (
-        <div
-          key={item.id}
-          className="bg-white border rounded-lg shadow-md hover:shadow-lg transition-transform duration-200 transform hover:-translate-y-1"
-        >
-          <Link to={`/product/${item.id}`} className="block">
-            <img
-              src={item.image}
-              alt={item.name}
-              className="w-auto h-40 sm:h-48 object-cover rounded-t-lg"
-            />
-            <div className="p-3">
-              <h3 className="text-sm sm:text-base font-medium text-gray-900 truncate">
-                {item.name}
-              </h3>
-              <p className="text-red-600 font-semibold text-sm sm:text-base mt-1">
-                ₹{item.price}
-              </p>
-            </div>
-          </Link>
-        </div>
-      ))}
+      {/* WISHLIST */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4">My Wishlist</h2>
+        {wishlist.length === 0 ? (
+          <p className="text-gray-600">Your wishlist is empty.</p>
+        ) : (
+     <div className="grid gap-5 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+  {wishlist.map((item) => (
+    <div
+      key={item.id}
+      className="flex justify-center"
+    >
+      <div className="bg-white border rounded-lg shadow-md hover:shadow-lg transition-transform duration-200 transform hover:-translate-y-1 max-w-[180px] w-full">
+        <Link to={`/product/${item.id}`} className="block">
+          <img
+            src={item.image}
+            alt={item.name}
+            className="w-auto h-40 mx-auto object-contain rounded-t-lg"
+          />
+          <div className="p-3">
+            <h3 className="text-sm sm:text-base font-medium text-gray-900 truncate">
+              {item.name}
+            </h3>
+            <p className="text-red-600 font-semibold text-sm sm:text-base mt-1">
+              ₹{item.price}
+            </p>
+          </div>
+        </Link>
+      </div>
     </div>
-  )}
+  ))}
 </div>
 
+        )}
+      </div>
 
-      {/* Recently Viewed */}
+      {/* RECENTLY VIEWED */}
       <div className="mb-8">
         <h2 className="text-2xl font-semibold mb-4">Recently Viewed</h2>
         {recentlyViewed.length === 0 ? (
@@ -145,11 +295,16 @@ useEffect(() => {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {recentlyViewed.map((product) => (
-              <div  key={product._id} className='flex items-start gap-6 text-sm'>
-                        <img className='w-16 sm:w-20' src={product.image[0]} alt="" />
-                        
-                <p className='sm:text-base font-medium'>{product.name}</p>
-                <p className="text-sm text-gray-600">₹{product.price}</p>
+              <div key={product._id} className="flex items-start gap-6 text-sm">
+                <img
+                  className="w-16 sm:w-20"
+                  src={product.image[0]}
+                  alt=""
+                />
+                <div>
+                  <p className="sm:text-base font-medium">{product.name}</p>
+                  <p className="text-sm text-gray-600">₹{product.price}</p>
+                </div>
               </div>
             ))}
           </div>

@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 
 const Product = () => {
   const { productId } = useParams();
-  const { products, currency, addToCart } = useContext(ShopContext);
+  const { products, currency, addToCart,addRecentlyViewed, } = useContext(ShopContext);
   const [productData, setProductData] = useState(null);
   const [image, setImage] = useState("");
   const [size, setSize] = useState("");
@@ -39,6 +39,9 @@ const Product = () => {
       setImage(found.image[0]);
     }
   }, [productId, products]);
+   useEffect(() => {
+    addRecentlyViewed(productId);
+  }, [productId]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });

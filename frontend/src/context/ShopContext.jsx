@@ -194,18 +194,76 @@ const fetchRecentlyViewed = async () => {
       headers: { token },
     });
 
-    if (response.data.success) {
-      return response.data.products;
+     if (response.data.success) {
+      // Return only first 8 products
+      return response.data.products.slice(0, 8);
     } else {
       toast.error(response.data.message);
       return [];
     }
-  } catch (error) {
+}
+
+   catch (error) {
     console.log(error);
     toast.error("Failed to fetch recently viewed products.");
     return [];
   }
 };
+const addRecentlyViewed = async (productId) => {
+  if (!token) return; // Only logged-in users
+  try {
+    await axios.post(
+      backendUrl + '/api/user/addrecently-viewed',
+      { productId },
+      { headers: { token } }
+    );
+  } catch (error) {
+    console.error("Error adding recently viewed:", error);
+  }
+};
+// Inside ShopContextProvider
+
+const fetchUserInfo = async () => {
+  if (!token) return null;
+  try {
+    const res = await axios.get(`${backendUrl}/api/user/info`, {
+      headers: { token },
+    });
+    if (res.data.success) {
+      return res.data.user; // { name, email, address }
+    } else {
+      toast.error(res.data.message);
+      return null;
+    }
+  } catch (err) {
+    console.error("Error fetching user info:", err);
+    toast.error("Failed to fetch user info.");
+    return null;
+  }
+};
+
+const updateUserInfo = async (updatedData) => {
+  if (!token) return false;
+  try {
+    const res = await axios.put(
+      `${backendUrl}/api/user/info`,
+      updatedData, // { name, email, address }
+      { headers: { token } }
+    );
+    if (res.data.success) {
+      toast.success("Profile updated successfully!");
+      return res.data.user; // updated { name, email, address }
+    } else {
+      toast.error(res.data.message);
+      return false;
+    }
+  } catch (err) {
+    console.error("Error updating user info:", err);
+    toast.error("Failed to update user info.");
+    return false;
+  }
+};
+
 
 
     const value = {
@@ -213,8 +271,9 @@ const fetchRecentlyViewed = async () => {
         search, setSearch, showSearch, setShowSearch,
         cartItems, addToCart,setCartItems, getUserCart,
         getCartCount, updateQuantity,
-        fetchRecentlyViewed, fetchUserOrders, fetchWishlist,
+        fetchRecentlyViewed, fetchUserOrders, fetchWishlist,addRecentlyViewed,
         getCartAmount, navigate, backendUrl,
+        fetchUserInfo,updateUserInfo,
         setToken, token
     }
 

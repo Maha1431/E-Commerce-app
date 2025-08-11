@@ -25,118 +25,43 @@ const Navbar = () => {
 
   return (
     <div className="relative">
-      {/* Background Overlay */}
+      {/* Overlay for mobile */}
       {visible && (
         <div
-          className="fixed inset-0 z-[998] bg-black opacity-40"
+          className="fixed inset-0 z-[998] bg-black opacity-40 sm:hidden"
           onClick={() => setVisible(false)}
         />
       )}
 
-      <div
-        className={`bg-slate-300 text-black py-5 font-medium ${
-          visible ? "hidden sm:block" : ""
-        }`}
-      >
+      <div className="bg-slate-300 text-black py-5 font-medium">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-8 flex items-center justify-between rounded">
+          {/* Logo */}
           <Link to="/">
-            <img src={assets.logo} className="w-36 " alt="Logo" />
+            <img src={assets.logo} className="w-28 sm:w-36" alt="Logo" />
           </Link>
 
           {/* Desktop Nav */}
-          <ul className="hidden  sm:flex gap-5 text-sm text-white-700 relative">
-            {/* HOME */}
-            <div className="group relative">
-              <NavLink
-                to="/"
-                className="flex flex-col items-center gap-1 hover:text-black"
-              >
-                <p>HOME</p>
-                <hr className="w-2/4 border-none h-[1.5px] bg-gray-700 group-hover:block hidden" />
-              </NavLink>
-            </div>
-
-            {/* COLLECTION */}
-            <div className="group relative">
-              <NavLink
-                to="/collection"
-                className="flex flex-col items-center gap-1 hover:text-black"
-              >
-                <p>COLLECTION</p>
-                <hr className="w-2/4 border-none h-[1.5px] bg-gray-700 group-hover:block hidden" />
-              </NavLink>
-              <div className="absolute left-0 top-full z-10 hidden group-hover:flex flex-col bg-white rounded shadow-lg py-2 w-40 text-gray-600">
-                <Link
-                  to="/collection"
-                  state={{ category: "Men" }}
-                  className="px-4 py-2 hover:bg-gray-100"
+          <ul className="hidden sm:flex gap-5 text-sm text-white-700 relative">
+            {[
+              { to: "/", label: "HOME" },
+              { to: "/collection", label: "COLLECTION" },
+              { to: "/about", label: "ABOUT" },
+              { to: "/contact", label: "CONTACT" },
+            ].map((item, idx) => (
+              <div key={idx} className="group relative">
+                <NavLink
+                  to={item.to}
+                  className="flex flex-col items-center gap-1 hover:text-black"
                 >
-                  Men
-                </Link>
-                <Link
-                  to="/collection"
-                  state={{ category: "Women" }}
-                  className="px-4 py-2 hover:bg-gray-100"
-                >
-                  Women
-                </Link>
-                <Link
-                  to="/collection"
-                  state={{ category: "Kids" }}
-                  className="px-4 py-2 hover:bg-gray-100"
-                >
-                  Kids
-                </Link>
+                  <p>{item.label}</p>
+                  <hr className="w-2/4 border-none h-[1.5px] bg-gray-700 group-hover:block hidden" />
+                </NavLink>
               </div>
-            </div>
-
-            {/* ABOUT */}
-            <div className="group relative">
-              <NavLink
-                to="/about"
-                className="flex flex-col items-center gap-1 hover:text-black"
-              >
-                <p>ABOUT</p>
-                <hr className="w-2/4 border-none h-[1.5px] bg-gray-700 group-hover:block hidden" />
-              </NavLink>
-              <div className="absolute left-0 top-full z-10 hidden group-hover:flex flex-col bg-white rounded shadow-lg py-2 w-40 text-gray-600">
-                <Link
-                  to="/about#mission"
-                  className="px-4 py-2 hover:bg-gray-100"
-                >
-                  Our Mission
-                </Link>
-                <Link to="/about#team" className="px-4 py-2 hover:bg-gray-100">
-                  Team
-                </Link>
-              </div>
-            </div>
-
-            {/* CONTACT */}
-            <div className="group relative">
-              <NavLink
-                to="/contact"
-                className="flex flex-col items-center gap-1 hover:text-black"
-              >
-                <p>CONTACT</p>
-                <hr className="w-2/4 border-none h-[1.5px] bg-gray-700 group-hover:block hidden" />
-              </NavLink>
-              <div className="absolute left-0 top-full z-10 hidden group-hover:flex flex-col bg-white rounded shadow-lg py-2 w-40 text-gray-600">
-                <Link
-                  to="/contact#support"
-                  className="px-4 py-2 hover:bg-gray-100"
-                >
-                  Support
-                </Link>
-                <Link to="/contact#faq" className="px-4 py-2 hover:bg-gray-100">
-                  FAQ
-                </Link>
-              </div>
-            </div>
+            ))}
           </ul>
 
           {/* Right Section */}
-          <div className="flex items-center gap-6  p-3 rounded">
+          <div className="flex items-center gap-4 sm:gap-6 p-3 rounded">
             {/* Search */}
             <img
               onClick={() => {
@@ -147,13 +72,15 @@ const Navbar = () => {
               className="w-5 cursor-pointer"
               alt="Search"
             />
+
+            {/* Wishlist */}
             <Link
-  to="/wishlist"
-  className="flex items-center gap-1 text-gray-700 hover:text-red-500"
->
-  <FaHeart className="text-lg" />
-  <span className="hidden sm:inline">Wishlist</span>
-</Link>
+              to="/wishlist"
+              className="flex items-center gap-1 text-gray-700 hover:text-red-500"
+            >
+              <FaHeart className="text-lg" />
+              <span className="hidden md:inline">Wishlist</span>
+            </Link>
 
             {/* Profile */}
             <div className="group relative">
@@ -166,9 +93,12 @@ const Navbar = () => {
               {token && (
                 <div className="group-hover:block hidden absolute dropdown-menu right-0 pt-4 z-50">
                   <div className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded shadow-md">
-                    <button onClick={() => navigate("/profile")} className="cursor-pointer hover:text-black">
+                    <p
+                      onClick={() => navigate("/profile")}
+                      className="cursor-pointer hover:text-black"
+                    >
                       My Profile
-                    </button>
+                    </p>
                     <p
                       onClick={() => navigate("/orders")}
                       className="cursor-pointer hover:text-black"
@@ -194,7 +124,7 @@ const Navbar = () => {
               </p>
             </Link>
 
-            {/* Mobile Menu Icon - visible only on small screens */}
+            {/* Mobile Menu Icon */}
             <img
               onClick={() => setVisible(true)}
               src={assets.menu_icon}
@@ -205,63 +135,46 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Sidebar Menu for Mobile */}
-      {visible && (
-        <div className="fixed top-0 right-0 bottom-0 z-[999] w-3/4 bg-white shadow-lg sm:hidden transition-transform duration-300 ease-in-out">
-          <div className="flex flex-col text-gray-600 h-full">
-            {/* Close / Back */}
-            <div
-              onClick={() => setVisible(false)}
-              className="flex items-center gap-4 p-4 cursor-pointer border-b"
-            >
-              <img
-                className="h-4 rotate-180"
-                src={assets.dropdown_icon}
-                alt="Back"
-              />
-              <p>Back</p>
-            </div>
-
-            {/* Menu Items */}
-            <button
-              onClick={() => {
-                setVisible(false);
-                navigate("/");
-              }}
-              className="py-3 pl-6 text-left border-b"
-            >
-              HOME
-            </button>
-            <button
-              onClick={() => {
-                setVisible(false);
-                navigate("/collection");
-              }}
-              className="py-3 pl-6 text-left border-b"
-            >
-              COLLECTION
-            </button>
-            <button
-              onClick={() => {
-                setVisible(false);
-                navigate("/about");
-              }}
-              className="py-3 pl-6 text-left border-b"
-            >
-              ABOUT
-            </button>
-            <button
-              onClick={() => {
-                setVisible(false);
-                navigate("/contact");
-              }}
-              className="py-3 pl-6 text-left border-b"
-            >
-              CONTACT
-            </button>
+      {/* Mobile Sidebar with Slide-in Effect */}
+      <div
+        className={`fixed top-0 right-0 bottom-0 z-[999] w-3/4 bg-white shadow-lg sm:hidden transform transition-transform duration-300 ease-in-out ${
+          visible ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="flex flex-col text-gray-600 h-full">
+          {/* Close */}
+          <div
+            onClick={() => setVisible(false)}
+            className="flex items-center gap-4 p-4 cursor-pointer border-b"
+          >
+            <img
+              className="h-4 rotate-180"
+              src={assets.dropdown_icon}
+              alt="Back"
+            />
+            <p>Back</p>
           </div>
+
+          {/* Menu Items */}
+          {[
+            { label: "HOME", path: "/" },
+            { label: "COLLECTION", path: "/collection" },
+            { label: "ABOUT", path: "/about" },
+            { label: "CONTACT", path: "/contact" },
+          ].map((item, idx) => (
+            <button
+              key={idx}
+              onClick={() => {
+                setVisible(false);
+                navigate(item.path);
+              }}
+              className="py-3 pl-6 text-left border-b hover:bg-gray-100"
+            >
+              {item.label}
+            </button>
+          ))}
         </div>
-      )}
+      </div>
     </div>
   );
 };

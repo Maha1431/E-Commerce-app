@@ -10,7 +10,15 @@ const userSchema = new mongoose.Schema(
     resetTokenExpiry: { type: Date, default: null },
     wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "product", default: [] }], // ✅
     recentlyViewed: [{ type: mongoose.Schema.Types.ObjectId, ref: "product" }], // ✅
+   address: {
+      street: String,
+      city: String,
+      state: String,
+      postalCode: String,
+      country: String
+    }
   },
+  
   { minimize: false }
 );
 

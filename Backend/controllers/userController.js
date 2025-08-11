@@ -238,5 +238,41 @@ const getRecentlyViewed = async (req, res) => {
     res.status(500).json({ success: false, message: "Error fetching recently viewed products" });
   }
 };
+const getUserInfo = async (req, res) => {
+  try {
+    const user = await userModel.findById(req.userId).select("name email address");
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    res.json({ success: true, user });
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+const updateUserInfo = async (req, res) => {
+  try {
+    const { name, email, address } = req.body;
 
-export { loginUser, registerUser, adminLogin, getUserOrders,getUserWishlist,addRecentlyViewed, getRecentlyViewed, forgotPassword, resetPassword };
+    const updatedUser = await userModel.findByIdAndUpdate(
+      req.userId,
+      {
+        ...(name && { name }),
+        ...(email && { email }),
+        ...(address && { address })
+      },
+      { new: true, runValidators: true }
+    ).select("name email address");
+
+    if (!updatedUser) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    res.json({ success: true, user: updatedUser });
+  } catch (error) {
+    console.error("Error updating user info:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export { loginUser, registerUser, adminLogin, getUserOrders,getUserWishlist,addRecentlyViewed, getRecentlyViewed, forgotPassword, resetPassword,getUserInfo, updateUserInfo };

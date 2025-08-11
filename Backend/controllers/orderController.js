@@ -51,6 +51,10 @@ const placeOrder = async (req, res) => {
     await orderData.save();
     console.log("🟩 Order Saved:", orderData);
 
+
+    // ✅ Update profile address
+    await userModel.findByIdAndUpdate(userId, { address });
+
     // Update stock for each size
      // ✅ Update stock using atomic MongoDB operator
     for (const item of items) {
@@ -102,6 +106,8 @@ const placeOrderStripe = async (req, res) => {
 
     const newOrder = new orderModel(orderData);
     await newOrder.save();
+     // ✅ Save address to user profile
+    await userModel.findByIdAndUpdate(userId, { address });
 
     const line_items = items.map((item) => ({
       price_data: {
