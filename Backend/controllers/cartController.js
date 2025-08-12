@@ -5,26 +5,32 @@ import userModel from "../models/userModel.js"
 const addToCart = async (req,res) => {
     try {
         
-        const { userId, itemId, size } = req.body
+       // Get userId from auth middleware instead of request body
+        const userId = req.userId;  
+        const { itemId, size } = req.body;
 
-        const userData = await userModel.findById(userId)
-        let cartData = await userData.cartData;
-
-        if (cartData[itemId]) {
-            if (cartData[itemId][size]) {
-                cartData[itemId][size] += 1
-            }
-            else {
-                cartData[itemId][size] = 1
-            }
-        } else {
-            cartData[itemId] = {}
-            cartData[itemId][size] = 1
+        // Validate inputs
+        if (!itemId || !size) {
+            return res.status(400).json({ success: false, message: "Missing itemId or size" });
         }
 
-        await userModel.findByIdAndUpdate(userId, {cartData})
+        const userData = await userModel.findById(userId);
+        if (!userData) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
 
-        res.json({ success: true, message: "Added To Cart" })
+        // Ensure cartData object exists
+        let cartData = userData.cartData || {};
+
+        if (cartData[itemId]) {
+            cartData[itemId][size] = (cartData[itemId][size] || 0) + 1;
+        } else {
+            cartData[itemId] = { [size]: 1 };
+        }
+
+        await userModel.findByIdAndUpdate(userId, { cartData });
+
+        res.json({ success: true, message: "Added To Cart" });
 
     } catch (error) {
         console.log(error)
@@ -36,16 +42,28 @@ const addToCart = async (req,res) => {
 const updateCart = async (req,res) => {
     try {
         
-        const { userId ,itemId, size, quantity } = req.body
+       const userId = req.userId; // from middleware
+        const { itemId, size, quantity } = req.body;
 
-        const userData = await userModel.findById(userId)
-        let cartData = await userData.cartData;
+        if (!itemId || !size || quantity == null) {
+            return res.status(400).json({ success: false, message: "Missing itemId, size, or quantity" });
+        }
 
-        cartData[itemId][size] = quantity
+        const userData = await userModel.findById(userId);
+        if (!userData) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
 
-        await userModel.findByIdAndUpdate(userId, {cartData})
-        res.json({ success: true, message: "Cart Updated" })
+        // Ensure cartData exists and has correct structure
+        if (!userData.cartData[itemId]) {
+            userData.cartData[itemId] = {};
+        }
 
+        userData.cartData[itemId][size] = quantity;
+
+        await userModel.findByIdAndUpdate(userId, { cartData: userData.cartData });
+
+        res.json({ success: true, message: "Cart Updated" });
     } catch (error) {
         console.log(error)
         res.json({ success: false, message: error.message })
@@ -58,12 +76,19 @@ const getUserCart = async (req,res) => {
 
     try {
         
-        const { userId } = req.body
-        
-        const userData = await userModel.findById(userId)
-        let cartData = await userData.cartData;
+            const userId = req.userId; // directly from middleware
 
-        res.json({ success: true, cartData })
+        if (!userId) {
+            return res.status(400).json({ success: false, message: "User ID is missing" });
+        }
+
+        const userData = await userModel.findById(userId);
+
+        if (!userData) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        res.json({ success: true, cartData: userData.cartData });
 
     } catch (error) {
         console.log(error)

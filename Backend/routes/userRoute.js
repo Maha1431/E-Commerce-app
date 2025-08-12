@@ -8,6 +8,7 @@ userRouter.post('/register',registerUser)
 userRouter.post('/login',loginUser)
 userRouter.post('/admin',adminLogin)
 userRouter.get('/orders', authUser, getUserOrders);
+userRouter.post('/addTowishlist' , authUser, addRecentlyViewed)
 userRouter.get('/wishlist', authUser, getUserWishlist);
 userRouter.post('/addrecently-viewed' , authUser, addRecentlyViewed)
 userRouter.get("/recently-viewed", authUser, getRecentlyViewed)

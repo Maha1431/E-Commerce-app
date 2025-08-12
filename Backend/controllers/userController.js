@@ -195,6 +195,23 @@ const resetPassword = async (req, res) => {
       .json({ success: false, message: "Failed to reset password" });
   }
 };
+const addToWishlist = async (req, res) => {
+  try {
+    const { productId } = req.body;
+    const userId = req.userId;
+
+    const user = await userModel.findById(userId);
+    if (!user.wishlist.includes(productId)) {
+      user.wishlist.push(productId);
+      await user.save();
+    }
+
+    res.json({ success: true, wishlist: user.wishlist });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 const getUserWishlist = async (req, res) => {
   try {
      const userId = req.userId;
@@ -275,4 +292,4 @@ const updateUserInfo = async (req, res) => {
   }
 };
 
-export { loginUser, registerUser, adminLogin, getUserOrders,getUserWishlist,addRecentlyViewed, getRecentlyViewed, forgotPassword, resetPassword,getUserInfo, updateUserInfo };
+export { loginUser, registerUser, adminLogin, getUserOrders,addToWishlist,getUserWishlist,addRecentlyViewed, getRecentlyViewed, forgotPassword, resetPassword,getUserInfo, updateUserInfo };

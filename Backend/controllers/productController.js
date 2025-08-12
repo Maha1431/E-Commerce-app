@@ -171,33 +171,27 @@ const updateProduct = async (req, res) => {
 };
  const rateProduct = async (req, res) => {
   try {
-    const { productId, userId, rating, comment } = req.body;
+   const { productId } = req.params;
+    const { rating, comment } = req.body;
+    const userId = req.userId; // from auth middleware
 
-    if (!productId || !userId || !rating) {
-      return res.status(400).json({ message: "Missing required fields." });
-    }
+    const product = await Product.findById(productId);
+    if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
 
-    const product = await productModel.findById(productId);
-
-    if (!product) return res.status(404).json({ message: "Product not found" });
-
-    // Check if user has already rated
-    const existingRating = product.ratings.find(
-      (r) => r.userId.toString() === userId
-    );
+    // Check if user already rated
+    const existingRating = product.ratings.find(r => r.user.toString() === userId);
 
     if (existingRating) {
-      // Update existing rating
+      // Update
       existingRating.rating = rating;
       existingRating.comment = comment;
     } else {
-      // Add new rating
-      product.ratings.push({ userId, rating, comment });
+      // Add new
+      product.ratings.push({ user: userId, rating, comment });
     }
 
-   await product.save({ validateBeforeSave: false }); // ✅ Skip full validation
-
-    res.status(200).json({ message: "Rating submitted", ratings: product.ratings });
+    await product.save();
+    res.json({ success: true, message: 'Rating saved', ratings: product.ratings })
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

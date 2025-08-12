@@ -16,58 +16,60 @@ const Profile = () => {
     address: { street: "", city: "", zip: "" },
   });
 
-  const { token, fetchUserOrders, fetchRecentlyViewed, fetchUserInfo, updateUserInfo } =
-    useContext(ShopContext);
+  const {
+    token,
+    fetchUserOrders,
+    fetchRecentlyViewed,
+    fetchUserInfo,
+    fetchWishlist,
+    updateUserInfo,
+  } = useContext(ShopContext);
 
-useEffect(() => {
-  const loadUserAndOrders = async () => {
-    try {
-      const [userData, ordersData] = await Promise.all([
-        fetchUserInfo(),
-        fetchUserOrders()
-      ]);
+  useEffect(() => {
+    const loadUserAndOrders = async () => {
+      try {
+        const [userData, ordersData] = await Promise.all([
+          fetchUserInfo(),
+          fetchUserOrders(),
+        ]);
 
-      let finalAddress = { ...userData?.address };
+        let finalAddress = { ...userData?.address };
 
-if (ordersData?.length > 0) {
-  const sortedOrders = [...ordersData].sort(
-    (a, b) => new Date(b.date) - new Date(a.date) // latest first
-  );
-  const latestOrder = sortedOrders[0];
+        if (ordersData?.length > 0) {
+          const sortedOrders = [...ordersData].sort(
+            (a, b) => new Date(b.date) - new Date(a.date) // latest first
+          );
+          const latestOrder = sortedOrders[0];
 
-  if (latestOrder?.address) {
-    finalAddress = {
-      street: latestOrder.address.street || finalAddress.street || "",
-      city: latestOrder.address.city || finalAddress.city || "",
-      zip: latestOrder.address.zip || latestOrder.address.pincode || finalAddress.zip || ""
+          if (latestOrder?.address) {
+            finalAddress = {
+              street: latestOrder.address.street || finalAddress.street || "",
+              city: latestOrder.address.city || finalAddress.city || "",
+              zip: latestOrder.address.zipcode || finalAddress.zipcode || "",
+            };
+          }
+        }
+
+        setUserInfo({
+          ...userData,
+          address: finalAddress,
+        });
+
+        // make sure edit form has same data
+        setFormData({
+          name: userData?.name || "",
+          email: userData?.email || "",
+          address: finalAddress,
+        });
+      } catch (err) {
+        console.error("Error loading user/profile data:", err);
+      }
     };
-  }
-}
 
-setUserInfo({
-  ...userData,
-  address: finalAddress
-});
-
-
-      // make sure edit form has same data
-      setFormData({
-        name: userData?.name || "",
-        email: userData?.email || "",
-        address: finalAddress
-      });
-
-    } catch (err) {
-      console.error("Error loading user/profile data:", err);
+    if (token) {
+      loadUserAndOrders();
     }
-  };
-
-  if (token) {
-    loadUserAndOrders();
-  }
-}, [token]);
-
-
+  }, [token]);
 
   const handleSave = async () => {
     try {
@@ -82,16 +84,17 @@ setUserInfo({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [ordersData, recentlyViewedData] = await Promise.all([
+        const [ordersData, recentlyViewedData,wishlist] = await Promise.all([
           fetchUserOrders(),
           fetchRecentlyViewed(),
+          
         ]);
-
-        const storedWishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
-
+       const stored = JSON.parse(localStorage.getItem("wishlist")) || [];
+    setWishlist(stored || []);
+        
         setOrders(ordersData || []);
         setRecentlyViewed(recentlyViewedData || []);
-        setWishlist(storedWishlist);
+       
       } catch (err) {
         console.error("Error fetching profile data:", err);
       }
@@ -118,14 +121,18 @@ setUserInfo({
               <input
                 type="text"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 className="w-full border rounded p-2"
                 placeholder="Name"
               />
               <input
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 className="w-full border rounded p-2"
                 placeholder="Email"
               />
@@ -182,11 +189,14 @@ setUserInfo({
             </div>
           ) : (
             <div className="text-center sm:text-left">
-              <h2 className="text-xl font-semibold">{userInfo?.name || "User"}</h2>
+              <h2 className="text-xl font-semibold">
+                {userInfo?.name || "User"}
+              </h2>
               <p className="text-gray-600 break-words">{userInfo?.email}</p>
               {userInfo?.address && (
                 <p className="text-gray-500 text-sm break-words">
-                  {userInfo.address.street}, {userInfo.address.city}, {userInfo.address.zip}
+                  {userInfo.address.street}, {userInfo.address.city},{" "}
+                  {userInfo.address.zip}
                 </p>
               )}
               <button
@@ -203,52 +213,46 @@ setUserInfo({
       {/* ORDERS */}
       <div>
         <h2 className="text-2xl font-semibold mb-4">My Orders</h2>
-        {orders.filter((order) => order.status === "Delivered").length === 0 ? (
-          <p className="text-gray-600">No delivered orders yet.</p>
-        ) : (
-          orders
-            .filter((order) => order.status === "Delivered")
-            .map((order, idx) => (
-              <div key={idx} className="border p-4 mb-6 rounded">
-                <p>
-                  <strong>Order ID:</strong> {order._id}
-                </p>
-                <p>
-                  <strong>Total:</strong> ₹{order.amount}
-                </p>
-                <p>
-                  <strong>Status:</strong> {order.status}
-                </p>
+        {orders
+          .filter((order) => order.status === "Delivered")
+          .map((order, idx) => (
+            <div key={idx} className="border p-4 mb-6 rounded">
+              <p>
+                <strong>Order ID:</strong> {order._id}
+              </p>
+              <p>
+                <strong>Total:</strong> ₹{order.amount}
+              </p>
+              <p>
+                <strong>Status:</strong> {order.status}
+              </p>
 
-                {Array.isArray(order.items) &&
-                  order.items.map((item) => {
-                    if (!item?.productId || !userInfo?._id) return null;
-                    const uniqueKey = item.productId?.toString();
+              {order.items?.map((item,index) => {
+                 const uniqueKey = `${order._id}-${item.productId?._id || item.productId || index}`;
+                return (
+                  <div key={uniqueKey} className="mt-3 border-t pt-3">
+                    <p>
+                      <strong>Product:</strong> {item.name}
+                    </p>
 
-                    return (
-                      <div key={uniqueKey} className="mt-3 border-t pt-3">
-                        <p>
-                          <strong>Product:</strong> {item.name}
-                        </p>
-                        <button
-                          onClick={() => setVisibleRatingId(uniqueKey)}
-                          className="text-blue-600 underline text-sm mt-1"
-                        >
-                          Rate this product
-                        </button>
-                        {visibleRatingId === uniqueKey && (
-                          <RateProduct
-                            productId={item.productId?.toString()}
-                            userId={userInfo._id}
-                            onClose={() => setVisibleRatingId(null)}
-                          />
-                        )}
-                      </div>
-                    );
-                  })}
-              </div>
-            ))
-        )}
+                    {visibleRatingId === uniqueKey ? (
+                      <RateProduct
+                        productId={uniqueKey}
+                        onClose={() => setVisibleRatingId(null)}
+                      />
+                    ) : (
+                      <button
+                        onClick={() => setVisibleRatingId(uniqueKey)}
+                        className="text-blue-600 underline text-sm mt-1"
+                      >
+                        Rate this product
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
       </div>
 
       {/* WISHLIST */}
@@ -257,33 +261,29 @@ setUserInfo({
         {wishlist.length === 0 ? (
           <p className="text-gray-600">Your wishlist is empty.</p>
         ) : (
-     <div className="grid gap-5 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
-  {wishlist.map((item) => (
-    <div
-      key={item.id}
-      className="flex justify-center"
-    >
-      <div className="bg-white border rounded-lg shadow-md hover:shadow-lg transition-transform duration-200 transform hover:-translate-y-1 max-w-[180px] w-full">
-        <Link to={`/product/${item.id}`} className="block">
-          <img
-            src={item.image}
-            alt={item.name}
-            className="w-auto h-40 mx-auto object-contain rounded-t-lg"
-          />
-          <div className="p-3">
-            <h3 className="text-sm sm:text-base font-medium text-gray-900 truncate">
-              {item.name}
-            </h3>
-            <p className="text-red-600 font-semibold text-sm sm:text-base mt-1">
-              ₹{item.price}
-            </p>
+          <div className="grid gap-5 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+            {wishlist.map((item) => (
+              <div key={item.id} className="flex justify-center">
+                <div className="bg-white border rounded-lg shadow-md hover:shadow-lg transition-transform duration-200 transform hover:-translate-y-1 max-w-[180px] w-full">
+                  <Link to={`/product/${item.id}`} className="block">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-auto h-40 mx-auto object-contain rounded-t-lg"
+                    />
+                    <div className="p-3">
+                      <h3 className="text-sm sm:text-base font-medium text-gray-900 truncate">
+                        {item.name}
+                      </h3>
+                      <p className="text-red-600 font-semibold text-sm sm:text-base mt-1">
+                        ₹{item.price}
+                      </p>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+            ))}
           </div>
-        </Link>
-      </div>
-    </div>
-  ))}
-</div>
-
         )}
       </div>
 
@@ -296,11 +296,7 @@ setUserInfo({
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {recentlyViewed.map((product) => (
               <div key={product._id} className="flex items-start gap-6 text-sm">
-                <img
-                  className="w-16 sm:w-20"
-                  src={product.image[0]}
-                  alt=""
-                />
+                <img className="w-16 sm:w-20" src={product.image[0]} alt="" />
                 <div>
                   <p className="sm:text-base font-medium">{product.name}</p>
                   <p className="text-sm text-gray-600">₹{product.price}</p>

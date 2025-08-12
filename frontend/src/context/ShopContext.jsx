@@ -15,6 +15,8 @@ const ShopContextProvider = (props) => {
     const [cartItems, setCartItems] = useState({});
     const [products, setProducts] = useState([]);
     const [token, setToken] = useState('')
+const [wishlist, setWishlist] = useState([]);
+
     const navigate = useNavigate();
 
  
@@ -167,17 +169,39 @@ const fetchUserOrders = async () => {
   }
 };
 
+// Update addWishlist
+const addWishlist = async (productId) => {
+  if (!token) return;
+  try {
+    const res = await axios.post(
+      backendUrl + '/api/user/addTowishlist',
+      { productId },
+      { headers: { token } }
+    );
+    if (res.data.success) {
+      toast.success("Added to wishlist!");
+      setWishlist((prev) => [...prev, res.data.item]); // push new item
+    } else {
+      toast.error(res.data.message);
+    }
+  } catch (error) {
+    console.error("Error adding to wishlist:", error);
+    toast.error("Failed to add to wishlist.");
+  }
+};
 
+// Update fetchWishlist to also set state
 const fetchWishlist = async () => {
+  if (!token) return [];
   try {
     const response = await axios.get(backendUrl + '/api/user/wishlist', {
       headers: { token },
     });
-
     if (response.data.success) {
+      setWishlist(response.data.wishlist); // set to context
       return response.data.wishlist;
     } else {
-      toast.error(response.data.message);
+      toast.error(response.data.message || "Failed to fetch wishlist");
       return [];
     }
   } catch (error) {
@@ -186,6 +210,7 @@ const fetchWishlist = async () => {
     return [];
   }
 };
+
 
 
 const fetchRecentlyViewed = async () => {
@@ -209,6 +234,7 @@ const fetchRecentlyViewed = async () => {
     return [];
   }
 };
+
 const addRecentlyViewed = async (productId) => {
   if (!token) return; // Only logged-in users
   try {
@@ -271,7 +297,7 @@ const updateUserInfo = async (updatedData) => {
         search, setSearch, showSearch, setShowSearch,
         cartItems, addToCart,setCartItems, getUserCart,
         getCartCount, updateQuantity,
-        fetchRecentlyViewed, fetchUserOrders, fetchWishlist,addRecentlyViewed,
+        fetchRecentlyViewed, fetchUserOrders,addWishlist, fetchWishlist,addRecentlyViewed,
         getCartAmount, navigate, backendUrl,
         fetchUserInfo,updateUserInfo,
         setToken, token
