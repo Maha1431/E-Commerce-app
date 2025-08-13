@@ -9,7 +9,7 @@ const WishList = () => {
 
   useEffect(() => {
     if (token) fetchWishlist();
-  }, [token, fetchWishlist]);
+  }, [token]);
 
   // DEBUG: inspect shapes & timing
   console.log("WishList debug: token", token);
