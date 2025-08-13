@@ -84,16 +84,16 @@ const Profile = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [ordersData, recentlyViewedData,wishlist] = await Promise.all([
+        const [ordersData, recentlyViewedData,wishlistData] = await Promise.all([
           fetchUserOrders(),
           fetchRecentlyViewed(),
+          fetchWishlist(),
           
         ]);
-       const stored = JSON.parse(localStorage.getItem("wishlist")) || [];
-    setWishlist(stored || []);
-        
+      
         setOrders(ordersData || []);
         setRecentlyViewed(recentlyViewedData || []);
+        setWishlist(wishlistData || [])
        
       } catch (err) {
         console.error("Error fetching profile data:", err);
@@ -267,7 +267,7 @@ const Profile = () => {
                 <div className="bg-white border rounded-lg shadow-md hover:shadow-lg transition-transform duration-200 transform hover:-translate-y-1 max-w-[180px] w-full">
                   <Link to={`/product/${item.id}`} className="block">
                     <img
-                      src={item.image}
+                      src={item.image[0]}
                       alt={item.name}
                       className="w-auto h-40 mx-auto object-contain rounded-t-lg"
                     />

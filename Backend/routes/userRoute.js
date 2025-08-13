@@ -1,5 +1,5 @@
 import express from 'express';
-import { loginUser,registerUser,adminLogin,getUserOrders,getUserWishlist,addRecentlyViewed,getRecentlyViewed,forgotPassword,resetPassword,getUserInfo,updateUserInfo } from '../controllers/userController.js';
+import { loginUser,registerUser,adminLogin,getUserOrders,addRecentlyViewed,getRecentlyViewed,forgotPassword,resetPassword,getUserInfo,updateUserInfo } from '../controllers/userController.js';
 import authUser from '../middleware/auth.js';
 
 const userRouter = express.Router();
@@ -9,7 +9,6 @@ userRouter.post('/login',loginUser)
 userRouter.post('/admin',adminLogin)
 userRouter.get('/orders', authUser, getUserOrders);
 userRouter.post('/addTowishlist' , authUser, addRecentlyViewed)
-userRouter.get('/wishlist', authUser, getUserWishlist);
 userRouter.post('/addrecently-viewed' , authUser, addRecentlyViewed)
 userRouter.get("/recently-viewed", authUser, getRecentlyViewed)
 userRouter.post('/forgot-password', forgotPassword)

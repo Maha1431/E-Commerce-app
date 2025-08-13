@@ -152,6 +152,10 @@ const [wishlist, setWishlist] = useState([]);
         }
         if (token) {
             getUserCart(token)
+             fetchWishlist();
+        }
+        else{
+           setWishlist([]);
         }
     }, [token]);
 
@@ -169,48 +173,62 @@ const fetchUserOrders = async () => {
   }
 };
 
-// Update addWishlist
+
+  const fetchWishlist = async () => {
+  if (!token) {
+    setWishlist([]);
+    return;
+  }
+  try {
+    const res = await axios.get(`${backendUrl}/api/wishlist/`, {
+      headers: { token },
+    });
+    if (res.data.success) setWishlist(res.data.wishlist || []);
+    else toast.error(res.data.message || "Failed to fetch wishlist");
+  } catch (error) {
+    console.error("Failed to fetch wishlist.", error);
+    toast.error("Failed to fetch wishlist.");
+  }
+};
+
+// Add to wishlist
 const addWishlist = async (productId) => {
-  if (!token) return;
+  if (!token) {
+    toast.error("Please login to add items to wishlist.");
+    return;
+  }
   try {
     const res = await axios.post(
-      backendUrl + '/api/user/addTowishlist',
+      `${backendUrl}/api/wishlist/add`,
       { productId },
       { headers: { token } }
     );
-    if (res.data.success) {
-      toast.success("Added to wishlist!");
-      setWishlist((prev) => [...prev, res.data.item]); // push new item
-    } else {
-      toast.error(res.data.message);
-    }
+    if (res.data.success) setWishlist(res.data.wishlist);
+    else toast.error(res.data.message);
   } catch (error) {
     console.error("Error adding to wishlist:", error);
     toast.error("Failed to add to wishlist.");
   }
 };
 
-// Update fetchWishlist to also set state
-const fetchWishlist = async () => {
-  if (!token) return [];
+// Remove from wishlist
+const removeWishlist = async (productId) => {
+  if (!token) {
+    toast.error("Please login to remove items from wishlist.");
+    return;
+  }
   try {
-    const response = await axios.get(backendUrl + '/api/user/wishlist', {
+    const res = await axios.delete(`${backendUrl}/api/wishlist/remove`, {
       headers: { token },
+      data: { productId },
     });
-    if (response.data.success) {
-      setWishlist(response.data.wishlist); // set to context
-      return response.data.wishlist;
-    } else {
-      toast.error(response.data.message || "Failed to fetch wishlist");
-      return [];
-    }
+    if (res.data.success) setWishlist(res.data.wishlist);
+    else toast.error(res.data.message);
   } catch (error) {
-    console.log(error);
-    toast.error("Failed to fetch wishlist.");
-    return [];
+    console.error("Error removing from wishlist:", error);
+    toast.error("Failed to remove from wishlist.");
   }
 };
-
 
 
 const fetchRecentlyViewed = async () => {
@@ -218,7 +236,7 @@ const fetchRecentlyViewed = async () => {
     const response = await axios.get(backendUrl + '/api/user/recently-viewed', {
       headers: { token },
     });
-
+     setWishlist(res.data.wishlist); // array of product IDs
      if (response.data.success) {
       // Return only first 8 products
       return response.data.products.slice(0, 8);
@@ -297,7 +315,8 @@ const updateUserInfo = async (updatedData) => {
         search, setSearch, showSearch, setShowSearch,
         cartItems, addToCart,setCartItems, getUserCart,
         getCartCount, updateQuantity,
-        fetchRecentlyViewed, fetchUserOrders,addWishlist, fetchWishlist,addRecentlyViewed,
+        fetchRecentlyViewed, fetchUserOrders, addRecentlyViewed,
+        addWishlist, fetchWishlist,removeWishlist,wishlist,
         getCartAmount, navigate, backendUrl,
         fetchUserInfo,updateUserInfo,
         setToken, token

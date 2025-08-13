@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { FaHeart, FaRegHeart } from "react-icons/fa"; // FontAwesome icons
+import { ShopContext } from "../context/ShopContext";
 
 const ProductItem = ({
   id,
@@ -13,24 +14,16 @@ const ProductItem = ({
   showSizesOnHover = false,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [wishlist, setWishlist] = useState(() => {
-    const stored = JSON.parse(localStorage.getItem("wishlist")) || [];
-    return stored;
-  });
+   const { wishlist, addWishlist, removeWishlist } = useContext(ShopContext);
 
-  const isInWishlist = wishlist.some((item) => item.id === id);
+ // Check if this product ID is in the wishlist
+  const isInWishlist = wishlist.includes(id);
 
   const toggleWishlist = () => {
-    let updatedWishlist;
-    if (isInWishlist) {
-      updatedWishlist = wishlist.filter((item) => item.id !== id);
-    } else {
-      updatedWishlist = [...wishlist, { id, name, image, price }];
-    }
-
-    setWishlist(updatedWishlist);
-    localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
+    if (isInWishlist) removeWishlist(id);
+    else addWishlist(id);
   };
+
 
   return (
     <div className="bg-white shadow-md p-3 rounded hover:shadow-lg transition-transform duration-300 transform hover:scale-105 cursor-pointer relative h-[340px]">
