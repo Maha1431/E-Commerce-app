@@ -50,7 +50,7 @@ const App = () => {
   };
 
   return (
-    <div className='min-h-screen overflow-x-hidden px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 2xl:px-12'>
+    <div className='min-h-[100dvh] w-full overflow-x-hidden overflow-y-auto px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 2xl:px-12'>
       {deferredPrompt && (
         <button className='p-2 ' onClick={handleInstallClick}>Install App</button>
       )}

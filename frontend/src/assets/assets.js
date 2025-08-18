@@ -88,6 +88,7 @@ import banner_img from "./banner_img.jpg"
 import banner_img1 from "./banner_img1.png"
 import banner_img2 from "./banner_img2.jpg"
 import banner_img3 from "./banner_img3.png"
+import banner_img4 from "./banner_img4.png"
 
 export const assets = {
 
@@ -99,6 +100,7 @@ export const assets = {
     banner_img1,
     banner_img2,
     banner_img3,
+    banner_img4,
     cart_icon,
     dropdown_icon,
     exchange_icon,

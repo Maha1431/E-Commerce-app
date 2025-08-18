@@ -3,8 +3,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/* allow vertical scrolling by default */
+html, body, #root {
+  height: auto;
+  min-height: 100%;
+}
+html, body {
+  overflow-y: scroll;     /* show scrollbar gutter even if not overflow */
+  overflow-x: hidden;
+}
 
-  
+/* Desktop / WebKit styling */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.35);
+  border-radius: 8px;
+  border: 2px solid transparent; /* keep thumb separate from track */
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-track { background: transparent; }
+
+/* Firefox */
+* { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.35) transparent; }
+
+/* Helpful resets */
+*, *::before, *::after { box-sizing: border-box; }
+img, video { max-width: 100%; height: auto; }
+
+
 a.active hr {
     display: block;
 }
@@ -19,9 +45,7 @@ a.active hr {
     font-style: normal;
   }
   
-  ::-webkit-scrollbar{
-    display: none;
-  }
+
 @media (max-width:640px) {
     a.active{
         background-color: black;
@@ -29,6 +53,8 @@ a.active hr {
     }
     
 }
+
+
 @keyframes marquee {
   0% {
     transform: translateX(100%);

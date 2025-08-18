@@ -14,6 +14,7 @@ const Hero = () => {
     assets.banner_img1,
     assets.banner_img2,
     assets.banner_img3,
+    assets.banner_img4
   ];
 
   const [current, setCurrent] = useState(0);
