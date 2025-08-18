@@ -24,7 +24,7 @@ const LatestCollection = () => {
         {/* Rendering Products */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6 mx-3 m-6">
           {latestProducts.map((item, index) => (
-            <div key={index} className="p-2">
+            <div key={index} className="w-full aspect-[2/4]">
               {" "}
               {/* Added margin/padding */}
               <ProductItem
